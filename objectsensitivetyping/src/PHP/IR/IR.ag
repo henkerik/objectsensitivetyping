@@ -1,0 +1,370 @@
+{
+-------------------------------------------------------------------------------
+--
+-------------------------------------------------------------------------------
+}
+
+
+imports 
+{
+import           Control.Applicative hiding (Const)
+import           Prelude             hiding (sequence)
+import qualified Data.List as L
+import qualified Data.Set as S
+
+import Analysis.Resource
+--import           FType               hiding (Type,True,False,Null,Integer,Double,Array)
+
+--import NativeAPI
+}
+
+
+pragma sepsemmods
+
+{
+type Var = String
+
+type FunctionName = String
+type MethodName   = String
+
+data CallableUnit = Method Type MethodName 
+                  | StaticMethod Type MethodName
+                  | Constructor Type
+                  | DefaultConstructor
+                  | Function FunctionName 
+                  | NativeConstructor Type
+                  | NativeMethod Type MethodName
+                  deriving (Show,Eq,Ord)
+                  
+type Label = Int                 
+}
+
+data Program
+    | Program s :: Stmt nativeClasses :: NativeClassDeclList 
+    
+deriving Program: Show
+deriving Program: Eq
+deriving Program: Ord
+
+----------------------------------------------------------------
+-- Native Classes 
+----------------------------------------------------------------
+
+-- Native classes are added to the AST because the need a programlabel as well.
+
+data NativeClassDecl
+    | NativeClassDecl name :: Type extend :: {Maybe Type} constructor :: NativeConstructorDecl constants :: NativeClassConstantDeclList fields :: NativeFieldDeclList methods :: NativeMethodDeclList
+    
+deriving NativeClassDecl: Show
+deriving NativeClassDecl: Eq
+deriving NativeClassDecl: Ord
+
+type NativeClassDeclList = [NativeClassDecl]
+
+data NativeConstructorDecl
+    | NativeConstructorDecl -- ftype :: {FType TypeSet}
+   
+deriving NativeConstructorDecl: Show
+deriving NativeConstructorDecl: Eq
+deriving NativeConstructorDecl: Ord    
+    
+    
+data NativeMethodDecl
+    | NativeMethodDecl isStatic :: Bool name :: MethodName typeset :: {NativeType NativeTypeSet}
+
+deriving NativeMethodDecl: Show
+deriving NativeMethodDecl: Eq
+deriving NativeMethodDecl: Ord
+    
+type NativeMethodDeclList = [NativeMethodDecl]
+
+data NativeFieldDecl 
+    | NativeFieldDecl isStatic :: Bool name :: FieldName typeset :: {NativeTerminalType}
+    
+deriving NativeFieldDecl: Show
+deriving NativeFieldDecl: Eq
+deriving NativeFieldDecl: Ord
+
+type NativeFieldDeclList = [NativeFieldDecl]  
+
+
+data NativeClassConstantDecl
+    | NativeClassConstantDecl name :: ClassConstantName ty :: {NativeTerminalType}
+    
+deriving NativeClassConstantDecl: Show 
+deriving NativeClassConstantDecl: Eq
+deriving NativeClassConstantDecl: Ord
+    
+    
+type NativeClassConstantDeclList = [NativeClassConstantDecl]
+
+{
+
+data NativeType a = TFun   { output :: Bool, optional :: Bool, left :: NativeType a, right :: NativeType a }
+                  | TValue { value :: a }
+                  deriving (Eq,Ord,Show) 
+
+type TypeVar = Int
+
+instance Functor NativeType where
+    fmap f (TFun output optional l r) = TFun output optional (fmap f l) (fmap f r)
+    fmap f (TValue value)             = TValue (f value)
+    
+data NativeTerminalType = NativeString
+                        | NativeBoolean
+                        | NativeFalse
+                        | NativeTrue
+                        | NativeInteger
+                        | NativeDouble
+                        | NativeFloat
+                        | NativeObject String
+                        | NativeNull
+                        | NativeResource Resource
+                        | NativeVar TypeVar
+                        | NativeArray NativeTypeSet NativeTypeSet
+                        deriving (Eq,Ord,Show)
+
+type NativeTypeSet = S.Set NativeTerminalType
+
+returnType :: NativeType a -> a
+returnType (TFun _ _ _ right) = returnType right
+returnType (TValue value)     = value
+
+returnTypes :: NativeType NativeTypeSet -> S.Set String
+returnTypes = S.map m . S.filter f . returnType  
+    where
+        m (NativeObject ty) = ty
+        m (NativeArray k v) = "array"
+    
+        f (NativeObject ty) = True
+        f (NativeArray k v) = True
+        f other             = False
+
+}
+        
+
+----------------------------------------------------------------
+
+data Clause
+    | Clause ty :: Type var :: Var s :: Stmt
+
+deriving Clause: Show
+deriving Clause: Eq
+deriving Clause: Ord
+
+type ClauseList = [Clause]
+        
+data Stmt
+    -- Function and class declarations
+    | FunctionDecl ref :: Bool name :: FunctionName params :: ParamList s :: Stmt
+    | ClassDecl isAbstract :: Bool isFinal :: Bool name :: Type extend :: {Maybe Type} implements :: {S.Set Type} members :: MemberList
+    | InterfaceDecl name :: Type extend :: {S.Set Type} members :: MemberList
+    
+    -- Statics and globals
+    | Static var :: Var value :: Const
+
+    -- Allocation
+    | ConstructorCall var :: Var ty :: Type params :: {[Var]}
+    | ConstructorReturn var :: Var ty :: Type params :: {[Var]}
+    | NativeConstructorCall var :: Var ty :: Type params :: {[Var]}
+
+    -- Control statements
+    | If c :: Var f :: Stmt s :: Stmt
+    | While s :: Stmt
+    | Foreach iter :: Var key :: {Maybe Var} ref :: Bool value :: Var s :: Stmt
+    | Sequence f :: Stmt s :: Stmt
+    | Try s :: Stmt clauses :: ClauseList
+    | Return v :: Var
+    | Throw v :: Var
+    | Echo v :: Var
+    | Skip
+    | Break
+    | Continue
+    | InstanceOf var :: Var var' :: Var ty :: Type
+    
+    -- Declare & Assign
+    | Declare var :: Var const :: Const
+    | Assign to :: Var ref :: Bool from :: Var
+    | Cast to :: Var cast :: Cast from :: Var
+    | Clone to :: Var from :: Var
+    | Die var :: Var
+    
+    -- Fields
+    | WriteField to :: Var field :: FieldName ref :: Bool  from :: Var
+    | ReadField to :: Var ref :: Bool from :: Var field :: FieldName
+
+    -- Static Fields
+    | WriteStaticField ty :: Type to :: Var ref :: Bool from :: Var
+    | ReadStaticField to :: Var ref :: Bool ty :: Type from :: Var
+
+    -- Array
+    | WriteArray to :: Var index :: {Maybe Var} ref :: Bool from :: Var
+    | ReadArray to :: Var ref :: Bool from :: Var index :: Var
+    
+    -- Increments and decrements statements
+    | PreIncr var :: Var
+    | PreDecr var :: Var
+        
+    -- Special functions
+    | Unset var :: Var
+    | Define var :: Var value :: Var
+    | Lookup var :: Var name :: ConstantName
+    
+    -- Operators
+    | BinaryOp op :: BinaryOp var :: Var left :: Var right :: Var
+    | UnaryOp op :: UnaryOp var :: Var var' :: Var
+    
+    -- Native calls
+    | NativeFunctionCall   var :: {Maybe Var} ref :: Bool name :: FunctionName params :: {[Var]} types :: {S.Set Type}
+    
+    -- Calls
+    | FunctionCall   var :: {Maybe Var} ref :: Bool name :: FunctionName params :: {[Var]}
+    | MethodCall     var :: {Maybe Var} ref :: Bool var' :: Var name :: MethodName params :: {[Var]}
+    | StaticCall     var :: {Maybe Var} ref :: Bool ty :: Type name :: MethodName params :: {[Var]}
+    | ResolvedCall   var :: {Maybe Var} ref :: Bool ty :: Type name :: MethodName params :: {[Var]}
+    
+    -- Additionally added nodes
+    | Log var :: Var label :: Label
+    
+    | Entry CallableUnit
+    | Exit CallableUnit
+    | ExitException CallableUnit
+    | ExceptionReturn
+    | CreateIterator var :: Var iter :: Var
+    | CallReturn 
+    | CallAfter
+    | ExceptionAfter
+    
+    -- Not quite elegant but needed for the nodes attribute in Flow.ag
+--    | ClauseStmt ty :: Type var :: Var
+--    | NativeMethodDeclStmt 
+    
+--    | After var :: {Maybe Var}
+--    | Filter var :: {Maybe Var}
+    
+    
+deriving Stmt: Show
+deriving Stmt: Eq
+deriving Stmt: Ord
+
+type MaybeStmt = maybe Stmt
+
+
+data Param
+    | Param ty :: {Maybe Type} ref :: Bool var :: Var value :: MaybeConst
+    
+deriving Param: Show
+deriving Param: Eq
+deriving Param: Ord
+    
+type ParamList = [Param]
+    
+{
+
+data UnaryOp = Not
+             | BNot
+             deriving (Show, Ord, Eq)
+
+data BinaryOp = -- Arithmetic operators
+                Plus
+              | Min
+              | Mul
+              | Div
+              | Mod
+              
+                -- String operators      
+              | Concat        
+                
+                -- Logical operators
+              | And           
+              | Or            
+              | Xor           
+                
+                -- Bitwise operators
+              | SL
+              | SR
+              | BAnd
+              | BOr
+              | BXor
+                
+                -- Comarision operators
+              | IsEqual
+              | IsIdentical
+              | IsNotEqual
+              | IsNotIdentical
+              | Less
+              | Greater
+              | LessEqual
+              | GreaterEqual
+              deriving (Show,Ord,Eq)
+
+type ConstantName = String
+type ClassConstantName = String
+
+}
+
+data Const  
+    | Null
+    | Bool                value :: Bool
+    | Integer             value :: Integer
+    | Double              value :: Double
+    | SingleQuotedString  value :: String 
+    | DoubleQuotedString  value :: String
+    | Constant            name :: ConstantName
+    | NativeConstant      name :: ConstantName
+    | ClassConstant       ty :: Type name :: ClassConstantName
+    | NativeClassConstant ty :: Type name :: ClassConstantName
+    | Array               l :: Label elems :: ArrayElemList 
+    
+deriving Const: Show    
+deriving Const: Eq
+deriving Const: Ord
+
+type MaybeConst = maybe Const
+
+                                           
+data ArrayElem 
+    | ElemWithKey k :: Const v :: Const           
+    | ElemWithoutKey v :: Const
+    
+deriving ArrayElem: Show
+deriving ArrayElem: Eq
+deriving ArrayElem: Ord
+
+type ArrayElemList = [ArrayElem]
+                
+               
+{         
+data Cast = CastArray 
+          | CastBool
+          | CastInt
+          | CastObject
+          | CastReal
+          | CastString
+          | CastUnset
+          deriving (Show,Eq,Ord)
+
+type FieldName = String
+}
+
+data Member 
+    | FieldDecl visibility :: Visibility isStatic :: Bool name :: FieldName value :: MaybeConst
+    | MethodDecl visibility :: Visibility isStatic :: Bool isAbstract :: Bool isFinal :: Bool ref :: Bool name :: MethodName params :: ParamList s :: MaybeStmt
+    | MethodDefinitionDecl name :: MethodName params :: ParamList
+    | ConstantDecl name :: ClassConstantName value :: Const
+
+deriving Member: Show
+deriving Member: Eq
+deriving Member: Ord
+
+type MemberList = [Member]
+
+---------------------------------------
+{
+data Visibility = Public
+                | Protected
+                | Private
+                deriving (Show,Eq,Ord)
+
+type Type = String
+}

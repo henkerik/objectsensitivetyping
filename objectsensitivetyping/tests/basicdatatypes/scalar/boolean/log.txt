@@ -1,0 +1,11 @@
+6:a:integer
+7:b:integer
+8:c:boolean
+9:c:boolean
+10:c:boolean
+11:c:boolean
+12:c:boolean
+13:c:boolean
+14:c:boolean
+15:c:boolean
+16:c:boolean

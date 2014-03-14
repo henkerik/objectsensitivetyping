@@ -1,0 +1,11 @@
+StreamWrapper
+    Changed static:: to StreamWrapper:: because static:: is not supported by phc.
+    
+StreamWrapper::stream_read    
+    Changed parse_url($path) ?: array() in (parse_url($path)) ? parse_url($path) : array() because phc does not support ?:
+    
+Path::normalize
+    Changed static:: to Path:: because static:: is not supported by phc.
+            
+ZipAdapter::__destruct
+    Removed destructor. Not supported by the analysis.

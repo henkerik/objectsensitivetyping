@@ -1,0 +1,51 @@
+name:                  cco
+version:               0.0.4
+synopsis:              Utilities for compiler construction
+description:           A small utility library accompanying the course on
+                       Compiler Construction (INFOMCCO) at Utrecht Univerity.
+license:               AllRightsReserved
+license-file:          LICENSE
+category:              Compilers/Interpreters
+copyright:             (c) 2008 Utrecht University
+author:                Stefan Holdermans
+maintainer:            Stefan Holdermans <stefan@cs.uu.nl>
+stability:             provisional
+homepage:              http://www.cs.uu.nl/wiki/Cco/Software
+tested-with:           GHC == 6.8.3, GHC == 6.10.1
+build-type:            Simple
+cabal-version:         >= 1.2
+extra-source-files:    AUTHORS
+
+library
+  if impl(ghc >= 6.10.1)
+    build-depends:     base >= 4, ansi-terminal >= 0.5.0, bytestring >=0.9.2.1, text >= 0.11.1.13
+    cpp-options:       -DCATEGORY
+  else
+    build-depends:     base <= 3.0.2.0, ansi-terminal >= 0.5.0, bytestring >=0.9.2.1, text >= 0.11.1.13
+  exposed-modules:     CCO.Component, CCO.Feedback, CCO.Lexing, CCO.Parsing, 
+                       CCO.Printing, CCO.SourcePos, CCO.Tree, CCO.Tree.Parser
+  other-modules:       CCO.Feedback.Message, CCO.Printing.Colour,
+                       CCO.Printing.Doc, CCO.Printing.Printer,
+                       CCO.Printing.Rendering, CCO.Tree.ATerm,
+                       CCO.Tree.ATerm.Lexer, CCO.Tree.ATerm.Parser,
+                       CCO.Tree.Base, CCO.Tree.Instances,
+                       CCO.Tree.Parser.Validation
+  extensions:          CPP, Rank2Types
+  hs-source-dirs:      src
+
+executable pp-aterm
+  main-is:             PpATerm.hs
+  if impl(ghc >= 6.10.1)
+    build-depends:     base >= 4, ansi-terminal >= 0.5.0, bytestring >=0.9.2.1, text >= 0.11.1.13
+    cpp-options:       -DCATEGORY
+  else
+    build-depends:     base <= 3.0.2.0, ansi-terminal >= 0.5.0, bytestring >=0.9.2.1, text >= 0.11.1.13
+  other-modules:       CCO.Component, CCO.Feedback, CCO.Feedback.Message,
+                       CCO.Parsing, CCO.Printing, CCO.Printing.Colour,
+                       CCO.Printing.Doc, CCO.Printing.Printer,
+                       CCO.Printing.Rendering, CCO.SourcePos, CCO.Tree,
+                       CCO.Tree.ATerm, CCO.Tree.ATerm.Lexer,
+                       CCO.Tree.ATerm.Parser, CCO.Tree.Base,
+                       CCO.Tree.Instances, CCO.Tree.Parser,
+                       CCO.Tree.Parser.Validation
+  hs-source-dirs:      src

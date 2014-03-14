@@ -1,0 +1,13 @@
+#!/bin/bash
+
+osta4php-precision +RTS -K128M > precision.txt
+osta4php-benchmark --samples=20 --summary=benchmark.txt +RTS -K128M
+
+osta4php-table-builder Matches     > ~/Documents/Thesis/table-matches.tex
+osta4php-table-builder PlainVSFull > ~/Documents/Thesis/table-plain-vs-full.tex
+osta4php-table-builder Type        > ~/Documents/Thesis/table-type.tex
+osta4php-table-builder GC          > ~/Documents/Thesis/table-gc.tex
+
+cd ~/Documents/Thesis
+make
+cd -

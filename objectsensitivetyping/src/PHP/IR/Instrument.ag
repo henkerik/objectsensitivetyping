@@ -1,0 +1,79 @@
+-------------------------------------------------------------------------------
+-- Instrument every assignment
+-------------------------------------------------------------------------------
+
+attr Program MaybeStmt Stmt Member MemberList Param ParamList Clause ClauseList NativeClassDecl NativeClassDeclList NativeConstructorDecl NativeMethodDecl NativeMethodDeclList NativeFieldDecl NativeFieldDeclList NativeClassConstantDecl NativeClassConstantDeclList MaybeConst Const ArrayElem ArrayElemList
+    syn instrumented :: self
+    
+    syn assignments use {`IM.union`} {IM.empty} :: {IM.IntMap Var}
+    syn methodCallSites use {`IM.union`} {IM.empty} :: {IM.IntMap (Var,MethodName)}
+
+sem Program
+    | Program 
+        lhs.instrumented = Program (Sequence __log__ @s.instrumented) @nativeClasses.instrumented
+
+sem Stmt
+    | Assign Cast ReadArray ReadField ReadStaticField PreIncr PreDecr BinaryOp UnaryOp Declare ConstructorCall NativeConstructorCall MethodCall StaticCall FunctionCall ResolvedCall NativeFunctionCall
+         +assignments    = IM.union $ maybe IM.empty (\var -> IM.singleton @loc.l var) @loc.v
+        lhs.instrumented = maybe @self (\var -> Sequence @self $ Log var @loc.l) @loc.v
+
+    | Assign Cast ReadArray ReadField ReadStaticField
+        loc.v = Just @to
+        loc.l = @label
+    | PreIncr PreDecr BinaryOp UnaryOp Declare InstanceOf
+        loc.v = Just @var
+        loc.l = @label
+    | ConstructorCall
+        loc.v = Just @var
+        loc.l = @la
+    | NativeConstructorCall 
+        loc.v = Just @var
+        loc.l = @label
+    | MethodCall StaticCall FunctionCall ResolvedCall 
+        loc.v = @var
+        loc.l = @la
+    | NativeFunctionCall
+        loc.v = @var
+        loc.l = @label
+    
+    | MethodCall
+        lhs.methodCallSites = IM.singleton @lc (@var', @name)
+        
+        
+{
+__log__ :: Stmt
+__log__ = FunctionDecl False "__log__" [Param Nothing False "var" Nothing, Param Nothing False "value" Nothing, Param Nothing False "label" Nothing] $
+    Sequence (FunctionCall (Just "type") False "gettype" ["value"]) $
+    Sequence (Declare "cmp" (DoubleQuotedString "object")) $
+    Sequence (BinaryOp IsEqual "is_object" "type" "cmp") $
+    Sequence (Declare "open" (DoubleQuotedString "[")) $
+    Sequence (Declare "close" (DoubleQuotedString "]")) $
+    Sequence (If "is_object" 
+        (Sequence (FunctionCall (Just "clazz") False "get_class" ["value"]) $
+         Sequence (Declare "object" (DoubleQuotedString "object")) $
+         Sequence (BinaryOp Concat "type" "object" "open") $
+         Sequence (BinaryOp Concat "type" "type" "clazz") $
+         (BinaryOp Concat "type" "type" "close"))
+        Skip
+    ) $
+    Sequence (Declare "cmp" (DoubleQuotedString "resource")) $
+    Sequence (BinaryOp IsEqual "is_resource" "type" "cmp") $
+    Sequence (If "is_resource"
+        (Sequence (FunctionCall (Just "resourcetype") False "get_resource_type" ["value"]) $
+         Sequence (Declare "resource" (DoubleQuotedString "resource")) $
+         Sequence (BinaryOp Concat "type" "resource" "open") $
+         Sequence (BinaryOp Concat "type" "type" "resourcetype") $
+         (BinaryOp Concat "type" "type" "close"))
+        Skip
+    ) $
+    Sequence (Declare "file" (DoubleQuotedString "log.txt")) $
+    Sequence (Declare "newline" (DoubleQuotedString "\\n")) $
+    Sequence (Declare "flags" (Constant "FILE_APPEND")) $
+    Sequence (Declare "colon" (DoubleQuotedString ":")) $
+    Sequence (BinaryOp Concat "line" "label" "colon") $
+    Sequence (BinaryOp Concat "line" "line" "var") $
+    Sequence (BinaryOp Concat "line" "line" "colon") $
+    Sequence (BinaryOp Concat "line" "line" "type") $
+    Sequence (BinaryOp Concat "line" "line" "newline") $
+    (FunctionCall Nothing False "file_put_contents" ["file", "line", "flags"])
+}

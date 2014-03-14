@@ -1,0 +1,212 @@
+{}
+
+{
+
+class IsStatic a where
+    isStatic :: a -> Bool
+    
+instance IsStatic MethodDeclaration where
+    isStatic (MethodDeclaration _ isStatic _ _ _ _ _ _) = isStatic
+    
+instance IsStatic FieldDeclaration where
+    isStatic (FieldDeclaration _ isStatic _) = isStatic
+
+
+data FunctionDeclaration = FunctionDeclaration {
+    functionName     :: FunctionName,
+    functionParams   :: [Param],
+    functionLn       :: Label,
+    functionLx       :: Label
+} deriving (Show,Eq,Ord)
+
+data FieldDeclaration  = FieldDeclaration { 
+    fieldVisibility  :: Visibility,
+    fieldIsStatic    :: Bool,
+    fieldName        :: FieldName
+} deriving (Show, Ord, Eq)
+
+data MethodDeclaration = MethodDeclaration { 
+    methodVisibility :: Visibility,
+    methodIsStatic   :: Bool,
+    methodIsAbstract :: Bool,
+    methodIsFinal    :: Bool,
+    methodName       :: MethodName, 
+    methodParams     :: [Param],
+    ln               :: Label,
+    lx               :: Label
+} deriving (Show, Ord, Eq)
+
+data ClassDeclaration  = ClassDeclaration { 
+    ty               :: Type, 
+    parent           :: Maybe Type,
+    label            :: Label,
+    fields           :: M.Map FieldName  FieldDeclaration, 
+    methods          :: M.Map MethodName MethodDeclaration,
+    classConstants   :: M.Map ClassConstantName Const
+} deriving (Show, Ord, Eq)
+
+--constantByName p n = case M.lookup n . constants_Syn_Program . execute $ p of 
+--    Nothing          -> error $ "A constant named " ++ show n ++ " does not exist"
+--    Just const'      -> const'
+    
+functionDeclarationByName g f = case M.lookup f . functions $ g of
+    Nothing          -> error $ "A function named " ++ show f ++ " does not exist"
+    Just declaration -> declaration
+    
+methodDeclarationByName g t m = case M.lookup m . methods . classDeclarationByType g $ t of
+    Nothing          -> error $ "A method named " ++ show m ++ " is not declared on type " ++ show t
+    Just declaration -> declaration
+
+{-
+classConstantByName g t n = case M.lookup n . classConstants . classDeclarationByType p $ t of 
+    Nothing          -> error $ "A class constant named " ++ show n ++ " is not declared on type " ++ show t
+    Just const'      -> const'
+ -}
+   
+classDeclarationByType g t = case M.lookup t . classes $ g of 
+    Nothing          -> error $ "Unknown type: " ++ show t
+    Just declaration -> declaration
+
+}
+
+-------------------------------------------------------------------------------
+-- Constants
+-------------------------------------------------------------------------------
+
+--attr Program ConstantDecl ConstantDeclList
+--    syn constants use {`M.union`} {M.empty} :: {M.Map ConstantName Const}
+--
+--
+--sem ConstantDecl
+--    | ConstantDecl
+--        lhs.constants = M.singleton @name @value
+--
+-------------------------------------------------------------------------------
+-- Functions
+-------------------------------------------------------------------------------
+
+attr Program Stmt
+    syn functions use {`M.union`} {M.empty} :: {M.Map Type FunctionDeclaration}
+
+
+sem Stmt
+    | FunctionDecl
+        lhs.functions = M.singleton @name $ FunctionDeclaration @name @params.self @ln @lx 
+
+
+
+-------------------------------------------------------------------------------
+-- Types
+-------------------------------------------------------------------------------
+
+-- Reuse from Flow.ag!!
+
+--attr Stmt MemberList Member 
+--    inh ty :: {Type}
+--
+--sem Stmt
+--    | ClassDecl
+--        members.ty = @ty
+--
+
+-------------------------------------------------------------------------------
+-- Class Hierarchy
+-------------------------------------------------------------------------------
+
+{-
+{
+mapSetUnion = M.unionWith S.union
+
+parent p t = M.lookup t . parent_Syn_Program . execute $ p
+}
+
+-- TODO Nested classes??
+attr Program Stmt
+    syn baseTypes use {`S.union`} {S.empty} :: {S.Set Type}
+    syn children  use {`mapSetUnion`} {M.empty} :: {M.Map Type (S.Set Type)}
+    syn parent    use {`M.union`} {M.empty} :: {M.Map Type Type}
+
+sem Stmt
+    | ClassDecl
+        +baseTypes = S.union $ if isNothing @extend then S.singleton @name else S.empty
+        +children  = M.union $ if isNothing @extend then M.empty else M.singleton (fromJust @extend) (S.singleton @name)
+        +parent    = M.union $ if isNothing @extend then M.empty else M.singleton @name (fromJust @extend)
+        
+-}        --
+        
+        
+-------------------------------------------------------------------------------
+-- Classes
+-------------------------------------------------------------------------------
+
+-- TODO Nested classes??
+attr Program Stmt
+    syn classes use {`M.union`} {M.empty} :: {M.Map Type ClassDeclaration}
+
+sem Stmt
+    | ClassDecl
+        lhs.classes = M.singleton @name $ ClassDeclaration @name @extend @label @members.fields @members.methods @members.classConstants
+        
+-------------------------------------------------------------------------------
+-- Methods
+-------------------------------------------------------------------------------
+
+attr Stmt Member MemberList
+    syn methods use {`M.union`} {M.empty} :: {M.Map MethodName MethodDeclaration}
+
+
+sem Member
+    | MethodDecl 
+        lhs.methods = M.singleton @name (MethodDeclaration @visibility @isStatic @isAbstract @isFinal @name @params.self @ln @lx)
+        
+-------------------------------------------------------------------------------
+-- Fields
+-------------------------------------------------------------------------------
+
+attr Stmt Member MemberList
+    syn fields use {`M.union`} {M.empty} :: {M.Map FieldName FieldDeclaration}
+    
+sem Member
+    | FieldDecl
+        lhs.fields = M.singleton @name (FieldDeclaration @visibility @isStatic @name)
+        
+-------------------------------------------------------------------------------
+-- Class Constants
+-------------------------------------------------------------------------------
+
+attr Stmt Member MemberList
+    syn classConstants use {`M.union`} {M.empty} :: {M.Map ClassConstantName Const}
+
+sem Member
+    | ConstantDecl
+        lhs.classConstants = M.singleton @name @value
+        
+
+
+
+
+
+
+
+--classDeclarationByType p t = case TZ.findChild ((==) t . ty . T.rootLabel) . fromJust . TZ.fromForest . buildClassHierarchy $ p of
+--    Nothing          -> error $ "Unknown type: " ++ show t
+--    Just declaration -> TZ.getLabel declaration
+
+
+--buildClassHierarchy p = T.unfoldForest createClass baseTypes
+--    where
+--        createClass ty = (ClassDeclaration ty (fields ty) (methods ty), children ty)
+--
+--        baseTypes = S.toList . baseTypes_Syn_Program . execute $ p
+--
+--        children ty = case M.lookup ty (children_Syn_Program . execute $ p) of
+--            Nothing       -> []
+--            Just children -> S.toList children
+--
+--        fields ty   = case M.lookup ty (fields_Syn_Program . execute $ p) of
+--            Nothing       -> M.empty
+--            Just fields   -> fields 
+--
+--        methods ty  = case M.lookup ty (methods_Syn_Program . execute $ p) of
+--            Nothing       -> M.empty
+--            Just methods  -> methods

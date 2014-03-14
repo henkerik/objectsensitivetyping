@@ -1,0 +1,57 @@
+module Native.NativeType where
+  
+import Data.Set as S
+import Analysis.Lattice.Resource
+  
+data NativeType a = TFun   { optional :: Bool, left :: NativeType a, right :: NativeType a }
+                  | TValue { value :: a }
+                  deriving (Eq,Ord,Show) 
+
+type TypeVar = Int
+
+
+--union :: NativeType TypeSet
+--union = TUnion Nothing Nothing Nothing S.empty
+
+instance Functor NativeType where
+    fmap f (TFun b l r)   = TFun b (fmap f l) (fmap f r)
+    fmap f (TValue value) = TValue (f value)
+
+
+  
+
+-- Breaking cyclic dependencies. 
+
+data TerminalType = String
+                  | Boolean
+                  | False
+                  | True
+                  | Integer
+                  | Double
+                  | Float
+                  | Object String
+                  | Null
+                  | Resource Resource
+                  | Var TypeVar
+                  | Array TypeSet TypeSet
+                  deriving (Eq,Ord,Show)
+
+type TypeSet = Set TerminalType
+
+
+
+--
+--data Array = AssocArray [(ArrayKey, TypeSet)]
+--           | KeyValueArray TypeSet TypeSet
+--           | ValueArray TypeSet
+--           deriving (Eq,Ord,Show)                  
+--
+--type ArrayKey = String                 
+--type TypeSet = Set Type
+--type TypeVar = Int
+--
+--data FType a = TValue a 
+--             | TVar TypeVar 
+--             | TArray TypeVar TypeVar
+--             | TFun Bool (FType a) (FType a)
+--             deriving (Show, Eq, Ord)

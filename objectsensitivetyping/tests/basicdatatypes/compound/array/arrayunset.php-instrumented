@@ -1,0 +1,68 @@
+<?php
+function __log__ ($var, $value, $label)  // "ln: 3, lx: 4, lxe: 5"
+{
+    $type = gettype ($value);// , Call: 7, Return: 8, After: 6 function call
+    $cmp = "object"; // 10
+    $is_object = $type == $cmp; // 11
+    if ($is_object){
+        $type = get_class ($value);// , Call: 14, Return: 15, After: 13 function call
+    }
+    else {
+         // "17 skip"
+    }
+    $file = "log.txt"; // 18
+    $newline = "\n"; // 19
+    $flags = FILE_APPEND; // 20
+    $colon = ":"; // 21
+    $line = $label . $colon; // 22
+    $line = $line . $var; // 23
+    $line = $line . $colon; // 24
+    $line = $line . $type; // 25
+    $line = $line . $newline; // 26
+    file_put_contents ($file, $line, $flags);// , Call: 28, Return: 29, After: 27 function call
+}
+ // "31 skip"
+$TLE0 = 1.0; // 32
+__log__ ("TLE0", $TLE0, 4);
+$TLE1 = 'one'; // 33
+__log__ ("TLE1", $TLE1, 5);
+$TLE2 = 2.0; // 34
+__log__ ("TLE2", $TLE2, 6);
+$TLE3 = true; // 35
+__log__ ("TLE3", $TLE3, 7);
+$TLE4 = 3.0; // 36
+__log__ ("TLE4", $TLE4, 8);
+$TLE5 = 1.0; // 37
+__log__ ("TLE5", $TLE5, 9);
+unset ($TSa6); // 38
+$TSa6[$TLE0] = $TLE1; // 39
+$TSa6[$TLE2] = $TLE3; // 40
+$TSa6[$TLE4] = $TLE5; // 41
+$a = $TSa6; // 42
+__log__ ("a", $a, 14);
+$TLE7 = 2.0; // 43
+__log__ ("TLE7", $TLE7, 15);
+$TMIi13 = $a[$TLE7]; // 44
+__log__ ("TMIi13", $TMIi13, 16);
+unset ($TMIi13); // 45
+$TLE8 = 'four'; // 46
+__log__ ("TLE8", $TLE8, 18);
+$a[] = $TLE8; // 47
+$TLE9 = 0.0; // 48
+__log__ ("TLE9", $TLE9, 20);
+$TSi10 = $a[$TLE9]; // 49
+__log__ ("TSi10", $TSi10, 21);
+$x = $TSi10; // 50
+__log__ ("x", $x, 22);
+$TLE11 = 1.0; // 51
+__log__ ("TLE11", $TLE11, 23);
+$TSi12 = $a[$TLE11]; // 52
+__log__ ("TSi12", $TSi12, 24);
+$y = $TSi12; // 53
+__log__ ("y", $y, 25);
+/*
+Native classes and their program labels
+class Exception (54 )
+    getMessage 56 (fromList [String])
+*/
+?>

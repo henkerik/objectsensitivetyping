@@ -1,0 +1,1412 @@
+<?php
+function __log__ ($var, $value, $label)  // "ln: 5, lx: 6, lxe: 7"
+{
+    $type = gettype ($value);// /* , Call: 10, Return: 11, Exception Return: 12, After: 8, Exception After: 9 */ function call
+    $cmp = "object"; // 13
+    $is_object = $type == $cmp; // 14
+    $open = "["; // 15
+    $close = "]"; // 16
+    if ($is_object){
+        $clazz = get_class ($value);// /* , Call: 20, Return: 21, Exception Return: 22, After: 18, Exception After: 19 */ function call
+        $object = "object"; // 23
+        $type = $object . $open; // 24
+        $type = $type . $clazz; // 25
+        $type = $type . $close; // 26
+    }
+    else {
+         // "27 skip"
+    }
+    $cmp = "resource"; // 28
+    $is_resource = $type == $cmp; // 29
+    if ($is_resource){
+        $resourcetype = get_resource_type ($value);// /* , Call: 33, Return: 34, Exception Return: 35, After: 31, Exception After: 32 */ function call
+        $resource = "resource"; // 36
+        $type = $resource . $open; // 37
+        $type = $type . $resourcetype; // 38
+        $type = $type . $close; // 39
+    }
+    else {
+         // "40 skip"
+    }
+    $file = "log.txt"; // 41
+    $newline = "\n"; // 42
+    $flags = FILE_APPEND; // 43
+    $colon = ":"; // 44
+    $line = $label . $colon; // 45
+    $line = $line . $var; // 46
+    $line = $line . $colon; // 47
+    $line = $line . $type; // 48
+    $line = $line . $newline; // 49
+    file_put_contents ($file, $line, $flags);// /* , Call: 52, Return: 53, Exception Return: 54, After: 50, Exception After: 51 */ function call
+}
+ // "55 skip"
+interface abstractlist {
+    public function add ($item)/* Entry: 56, Exit: 57, Exception Exit: 58 */ 
+                                                                            ;
+    public function addlist ($list)/* Entry: 59, Exit: 60, Exception Exit: 61 */ 
+                                                                                ;
+    public function contains ($item)/* Entry: 62, Exit: 63, Exception Exit: 64 */ 
+                                                                                 ;
+    public function isempty ()/* Entry: 65, Exit: 66, Exception Exit: 67 */ 
+                                                                           ;
+    public function remove ($remove)/* Entry: 68, Exit: 69, Exception Exit: 70 */ 
+                                                                                 ;
+    public function length ()/* Entry: 71, Exit: 72, Exception Exit: 73 */ 
+                                                                          ;
+    public function index ($item)/* Entry: 74, Exit: 75, Exception Exit: 76 */ 
+                                                                              ;
+}
+class arraylist implements abstractlist { // "77"
+    protected $list;
+    public function __construct ()/* Entry: 78, Exit: 79, Exception Exit: 80 */ 
+                                                                               {
+                                                                                   unset ($TSa20); // 81
+                                                                                   $TSa20 = (array) $TSa20; // 82
+                                                                                   __log__ ("TSa20", $TSa20, 32);
+                                                                                   $TSNNt238 = $TSa20; // 83
+                                                                                   __log__ ("TSNNt238", $TSNNt238, 33);
+                                                                                   $this->list = $TSNNt238; // 84
+                                                                               }
+    public function add ($item)/* Entry: 85, Exit: 86, Exception Exit: 87 */ 
+                                                                            {
+                                                                                $TLE21 = $this->length ();// /* , Call: 90, Return: 91, Exception Return: 92, After: 88, Exception After: 89 */ method call
+                                                                                __log__ ("TLE21", $TLE21, 38);
+                                                                                $TSNNt239 = $this->list; // 93
+                                                                                __log__ ("TSNNt239", $TSNNt239, 43);
+                                                                                $TSNNt239[$TLE21] = $item; // 94
+                                                                                $this->list = $TSNNt239; // 95
+                                                                            }
+    public function get ($index)/* Entry: 96, Exit: 97, Exception Exit: 98 */ 
+                                                                             {
+                                                                                 $TSNNt240 = $this->list; // 99
+                                                                                 __log__ ("TSNNt240", $TSNNt240, 49);
+                                                                                 $TSNNi241 = $TSNNt240[$index]; // 100
+                                                                                 __log__ ("TSNNi241", $TSNNi241, 50);
+                                                                                 return $TSNNi241; // 101
+                                                                             }
+    public function addlist ($list)/* Entry: 102, Exit: 103, Exception Exit: 104 */ 
+                                                                                   {
+                                                                                       $i = 0; // 105
+                                                                                       __log__ ("i", $i, 55);
+                                                                                       $ElcfPF0 = true; // 106
+                                                                                       __log__ ("ElcfPF0", $ElcfPF0, 56);
+                                                                                       while (True){
+                                                                                           if ($ElcfPF0){
+                                                                                               $ElcfPF0 = false; // 109
+                                                                                               __log__ ("ElcfPF0", $ElcfPF0, 59);
+                                                                                           }
+                                                                                           else {
+                                                                                               ++$i; // 110
+                                                                                               __log__ ("i", $i, 60);
+                                                                                           }
+                                                                                           $TLE22 = $list->length ();// /* , Call: 113, Return: 114, Exception Return: 115, After: 111, Exception After: 112 */ method call
+                                                                                           __log__ ("TLE22", $TLE22, 61);
+                                                                                           $TLE23 = $i < $TLE22; // 116
+                                                                                           __log__ ("TLE23", $TLE23, 66);
+                                                                                           if ($TLE23){
+                                                                                                // "118 skip"
+                                                                                           }
+                                                                                           else {
+                                                                                               break; // 119
+                                                                                           }
+                                                                                           $TLE24 = $list->get ($i);// /* , Call: 122, Return: 123, Exception Return: 124, After: 120, Exception After: 121 */ method call
+                                                                                           __log__ ("TLE24", $TLE24, 70);
+                                                                                           $this->add ($TLE24);// /* , Call: 127, Return: 128, Exception Return: 129, After: 125, Exception After: 126 */ method call
+                                                                                       }
+                                                                                   }
+    public function contains ($item)/* Entry: 130, Exit: 131, Exception Exit: 132 */ 
+                                                                                    {
+                                                                                        $i = 0; // 133
+                                                                                        __log__ ("i", $i, 83);
+                                                                                        $ElcfPF1 = true; // 134
+                                                                                        __log__ ("ElcfPF1", $ElcfPF1, 84);
+                                                                                        while (True){
+                                                                                            if ($ElcfPF1){
+                                                                                                $ElcfPF1 = false; // 137
+                                                                                                __log__ ("ElcfPF1", $ElcfPF1, 87);
+                                                                                            }
+                                                                                            else {
+                                                                                                ++$i; // 138
+                                                                                                __log__ ("i", $i, 88);
+                                                                                            }
+                                                                                            $TLE25 = $list->length ();// /* , Call: 141, Return: 142, Exception Return: 143, After: 139, Exception After: 140 */ method call
+                                                                                            __log__ ("TLE25", $TLE25, 89);
+                                                                                            $TLE26 = $i < $TLE25; // 144
+                                                                                            __log__ ("TLE26", $TLE26, 94);
+                                                                                            if ($TLE26){
+                                                                                                 // "146 skip"
+                                                                                            }
+                                                                                            else {
+                                                                                                break; // 147
+                                                                                            }
+                                                                                            $TLE27 = $list->get ($i);// /* , Call: 150, Return: 151, Exception Return: 152, After: 148, Exception After: 149 */ method call
+                                                                                            __log__ ("TLE27", $TLE27, 98);
+                                                                                            $TLE28 = $item === $TLE27; // 153
+                                                                                            __log__ ("TLE28", $TLE28, 103);
+                                                                                            if ($TLE28){
+                                                                                                $TLE29 = true; // 155
+                                                                                                __log__ ("TLE29", $TLE29, 105);
+                                                                                                return $TLE29; // 156
+                                                                                            }
+                                                                                            else {
+                                                                                                 // "157 skip"
+                                                                                            }
+                                                                                        }
+                                                                                        $TLE30 = false; // 158
+                                                                                        __log__ ("TLE30", $TLE30, 108);
+                                                                                        return $TLE30; // 159
+                                                                                    }
+    public function remove ($remove)/* Entry: 160, Exit: 161, Exception Exit: 162 */ 
+                                                                                    {
+                                                                                        unset ($TSa31); // 163
+                                                                                        $TSa31 = (array) $TSa31; // 164
+                                                                                        __log__ ("TSa31", $TSa31, 114);
+                                                                                        $new = $TSa31; // 165
+                                                                                        __log__ ("new", $new, 115);
+                                                                                        $i = 0; // 166
+                                                                                        __log__ ("i", $i, 116);
+                                                                                        $ElcfPF2 = true; // 167
+                                                                                        __log__ ("ElcfPF2", $ElcfPF2, 117);
+                                                                                        while (True){
+                                                                                            if ($ElcfPF2){
+                                                                                                $ElcfPF2 = false; // 170
+                                                                                                __log__ ("ElcfPF2", $ElcfPF2, 120);
+                                                                                            }
+                                                                                            else {
+                                                                                                ++$i; // 171
+                                                                                                __log__ ("i", $i, 121);
+                                                                                            }
+                                                                                            $TLE32 = $this->length ();// /* , Call: 174, Return: 175, Exception Return: 176, After: 172, Exception After: 173 */ method call
+                                                                                            __log__ ("TLE32", $TLE32, 122);
+                                                                                            $TLE33 = $i < $TLE32; // 177
+                                                                                            __log__ ("TLE33", $TLE33, 127);
+                                                                                            if ($TLE33){
+                                                                                                 // "179 skip"
+                                                                                            }
+                                                                                            else {
+                                                                                                break; // 180
+                                                                                            }
+                                                                                            $TLE34 = $this->get ($i);// /* , Call: 183, Return: 184, Exception Return: 185, After: 181, Exception After: 182 */ method call
+                                                                                            __log__ ("TLE34", $TLE34, 131);
+                                                                                            $TLE35 = $remove != $TLE34; // 186
+                                                                                            __log__ ("TLE35", $TLE35, 136);
+                                                                                            if ($TLE35){
+                                                                                                $TLE36 = sizeof ($new); // "188native call"
+                                                                                                __log__ ("TLE36", $TLE36, 138);
+                                                                                                $TLE37 = $this->get ($i);// /* , Call: 191, Return: 192, Exception Return: 193, After: 189, Exception After: 190 */ method call
+                                                                                                __log__ ("TLE37", $TLE37, 139);
+                                                                                                $new[$TLE36] = $TLE37; // 194
+                                                                                            }
+                                                                                            else {
+                                                                                                 // "195 skip"
+                                                                                            }
+                                                                                        }
+                                                                                        $TSNNt242 = $new; // 196
+                                                                                        __log__ ("TSNNt242", $TSNNt242, 146);
+                                                                                        $this->list = $TSNNt242; // 197
+                                                                                    }
+    public function isempty ()/* Entry: 198, Exit: 199, Exception Exit: 200 */ 
+                                                                              {
+                                                                                  $TSNNt243 = $this->list; // 201
+                                                                                  __log__ ("TSNNt243", $TSNNt243, 151);
+                                                                                  $TLE38 = sizeof ($TSNNt243); // "202native call"
+                                                                                  __log__ ("TLE38", $TLE38, 152);
+                                                                                  $TLE39 = null; // 203
+                                                                                  __log__ ("TLE39", $TLE39, 153);
+                                                                                  $TLE40 = $TLE38 == $TLE39; // 204
+                                                                                  __log__ ("TLE40", $TLE40, 154);
+                                                                                  return $TLE40; // 205
+                                                                              }
+    public function join ($separator)/* Entry: 206, Exit: 207, Exception Exit: 208 */ 
+                                                                                     {
+                                                                                         $TSNNt244 = $this->list; // 209
+                                                                                         __log__ ("TSNNt244", $TSNNt244, 159);
+                                                                                         $TLE41 = join ($separator, $TSNNt244); // "210native call"
+                                                                                         __log__ ("TLE41", $TLE41, 160);
+                                                                                         return $TLE41; // 211
+                                                                                     }
+    public function index ($item)/* Entry: 212, Exit: 213, Exception Exit: 214 */ 
+                                                                                 {
+                                                                                     $i = 0; // 215
+                                                                                     __log__ ("i", $i, 165);
+                                                                                     $ElcfPF3 = true; // 216
+                                                                                     __log__ ("ElcfPF3", $ElcfPF3, 166);
+                                                                                     while (True){
+                                                                                         if ($ElcfPF3){
+                                                                                             $ElcfPF3 = false; // 219
+                                                                                             __log__ ("ElcfPF3", $ElcfPF3, 169);
+                                                                                         }
+                                                                                         else {
+                                                                                             ++$i; // 220
+                                                                                             __log__ ("i", $i, 170);
+                                                                                         }
+                                                                                         $TLE42 = $this->length ();// /* , Call: 223, Return: 224, Exception Return: 225, After: 221, Exception After: 222 */ method call
+                                                                                         __log__ ("TLE42", $TLE42, 171);
+                                                                                         $TLE43 = $i < $TLE42; // 226
+                                                                                         __log__ ("TLE43", $TLE43, 176);
+                                                                                         if ($TLE43){
+                                                                                              // "228 skip"
+                                                                                         }
+                                                                                         else {
+                                                                                             break; // 229
+                                                                                         }
+                                                                                         $TSNNt245 = $this->list; // 230
+                                                                                         __log__ ("TSNNt245", $TSNNt245, 180);
+                                                                                         $TSNNi246 = $TSNNt245[$i]; // 231
+                                                                                         __log__ ("TSNNi246", $TSNNi246, 181);
+                                                                                         $TLE44 = $TSNNi246 === $item; // 232
+                                                                                         __log__ ("TLE44", $TLE44, 182);
+                                                                                         $TSNNt245[$i] = $TSNNi246; // 233
+                                                                                         $this->list = $TSNNt245; // 234
+                                                                                         if ($TLE44){
+                                                                                             return $i; // 236
+                                                                                         }
+                                                                                         else {
+                                                                                              // "237 skip"
+                                                                                         }
+                                                                                     }
+                                                                                 }
+    public function length ()/* Entry: 238, Exit: 239, Exception Exit: 240 */ 
+                                                                             {
+                                                                                 $TSNNt247 = $this->list; // 241
+                                                                                 __log__ ("TSNNt247", $TSNNt247, 191);
+                                                                                 $TLE45 = sizeof ($TSNNt247); // "242native call"
+                                                                                 __log__ ("TLE45", $TLE45, 192);
+                                                                                 return $TLE45; // 243
+                                                                             }
+}
+interface mailable {
+    public function gettoaddresses ()/* Entry: 244, Exit: 245, Exception Exit: 246 */ 
+                                                                                     ;
+    public function getsubject ()/* Entry: 247, Exit: 248, Exception Exit: 249 */ 
+                                                                                 ;
+    public function build ()/* Entry: 250, Exit: 251, Exception Exit: 252 */ 
+                                                                            ;
+}
+class mailexception extends exception { // "253"
+}
+interface encoding {
+    public function gettype ()/* Entry: 254, Exit: 255, Exception Exit: 256 */ 
+                                                                              ;
+    public function encode ($content)/* Entry: 257, Exit: 258, Exception Exit: 259 */ 
+                                                                                     ;
+}
+class base64encoding implements encoding { // "260"
+    protected function __construct ()/* Entry: 261, Exit: 262, Exception Exit: 263 */ 
+                                                                                     {
+                                                                                          // "264 skip"
+                                                                                     }
+    protected static $instance;
+    public static function getinstance ()/* Entry: 265, Exit: 266, Exception Exit: 267 */ 
+                                                                                         {
+                                                                                             $TLE46 = null; // 268
+                                                                                             __log__ ("TLE46", $TLE46, 218);
+                                                                                             $TSNNt248 = base64encoding::$instance; // 269
+                                                                                             __log__ ("TSNNt248", $TSNNt248, 219);
+                                                                                             $TLE47 = $TSNNt248 == $TLE46; // 270
+                                                                                             __log__ ("TLE47", $TLE47, 220);
+                                                                                             if ($TLE47){
+                                                                                                 $TLE48 = new base64encoding ();// /* , Call: 274, Return: 275, Exception Return: 276, After: 272, Exception After: 273 */ constructor call
+                                                                                                 __log__ ("TLE48", $TLE48, 222);
+                                                                                                 $TSNNt249 = $TLE48; // 277
+                                                                                                 __log__ ("TSNNt249", $TSNNt249, 227);
+                                                                                                 base64encoding::$instance = $TSNNt249; // 278
+                                                                                             }
+                                                                                             else {
+                                                                                                  // "279 skip"
+                                                                                             }
+                                                                                             $TSNNt250 = base64encoding::$instance; // 280
+                                                                                             __log__ ("TSNNt250", $TSNNt250, 230);
+                                                                                             return $TSNNt250; // 281
+                                                                                         }
+    public function gettype ()/* Entry: 282, Exit: 283, Exception Exit: 284 */ 
+                                                                              {
+                                                                                  $TLE49 = 'base64'; // 285
+                                                                                  __log__ ("TLE49", $TLE49, 235);
+                                                                                  return $TLE49; // 286
+                                                                              }
+    public function encode ($content)/* Entry: 287, Exit: 288, Exception Exit: 289 */ 
+                                                                                     {
+                                                                                         $TLE50 = base64_encode ($content); // "290native call"
+                                                                                         __log__ ("TLE50", $TLE50, 240);
+                                                                                         $TLE51 = 76; // 291
+                                                                                         __log__ ("TLE51", $TLE51, 241);
+                                                                                         $TLE52 = mimemail::LINE_BREAK_SEQUENCE; // 292
+                                                                                         __log__ ("TLE52", $TLE52, 242);
+                                                                                         $TLE53 = chunk_split ($TLE50, $TLE51, $TLE52); // "293native call"
+                                                                                         __log__ ("TLE53", $TLE53, 243);
+                                                                                         $TLE54 = rtrim ($TLE53); // "294native call"
+                                                                                         __log__ ("TLE54", $TLE54, 244);
+                                                                                         return $TLE54; // 295
+                                                                                     }
+}
+class sevenbitencoding implements encoding { // "296"
+    protected function __construct ()/* Entry: 297, Exit: 298, Exception Exit: 299 */ 
+                                                                                     {
+                                                                                          // "300 skip"
+                                                                                     }
+    protected static $instance;
+    public static function getinstance ()/* Entry: 301, Exit: 302, Exception Exit: 303 */ 
+                                                                                         {
+                                                                                             $TLE55 = null; // 304
+                                                                                             __log__ ("TLE55", $TLE55, 254);
+                                                                                             $TSNNt251 = sevenbitencoding::$instance; // 305
+                                                                                             __log__ ("TSNNt251", $TSNNt251, 255);
+                                                                                             $TLE56 = $TSNNt251 == $TLE55; // 306
+                                                                                             __log__ ("TLE56", $TLE56, 256);
+                                                                                             if ($TLE56){
+                                                                                                 $TLE57 = new sevenbitencoding ();// /* , Call: 310, Return: 311, Exception Return: 312, After: 308, Exception After: 309 */ constructor call
+                                                                                                 __log__ ("TLE57", $TLE57, 258);
+                                                                                                 $TSNNt252 = $TLE57; // 313
+                                                                                                 __log__ ("TSNNt252", $TSNNt252, 263);
+                                                                                                 sevenbitencoding::$instance = $TSNNt252; // 314
+                                                                                             }
+                                                                                             else {
+                                                                                                  // "315 skip"
+                                                                                             }
+                                                                                             $TSNNt253 = sevenbitencoding::$instance; // 316
+                                                                                             __log__ ("TSNNt253", $TSNNt253, 266);
+                                                                                             return $TSNNt253; // 317
+                                                                                         }
+    public function gettype ()/* Entry: 318, Exit: 319, Exception Exit: 320 */ 
+                                                                              {
+                                                                                  $TLE58 = '7bit'; // 321
+                                                                                  __log__ ("TLE58", $TLE58, 271);
+                                                                                  return $TLE58; // 322
+                                                                              }
+    public function encode ($content)/* Entry: 323, Exit: 324, Exception Exit: 325 */ 
+                                                                                     {
+                                                                                         return $content; // 326
+                                                                                     }
+}
+class mimeentity { // "327"
+    protected $contentType;
+    protected $contentTransferEncoding;
+    protected $contentDisposition;
+    protected $contentID;
+    protected $content;
+    public function __construct ($content, $contentType, $contentTransferEncoding, $contentDisposition, $contentID)/* Entry: 328, Exit: 329, Exception Exit: 330 */ 
+                                                                                                                                                                   {
+                                                                                                                                                                       $TSNNt254 = $content; // 331
+                                                                                                                                                                       __log__ ("TSNNt254", $TSNNt254, 281);
+                                                                                                                                                                       $this->content = $TSNNt254; // 332
+                                                                                                                                                                       $TSNNt255 = $contentType; // 333
+                                                                                                                                                                       __log__ ("TSNNt255", $TSNNt255, 283);
+                                                                                                                                                                       $this->contentType = $TSNNt255; // 334
+                                                                                                                                                                       $TSNNt256 = $contentTransferEncoding; // 335
+                                                                                                                                                                       __log__ ("TSNNt256", $TSNNt256, 285);
+                                                                                                                                                                       $this->contentTransferEncoding = $TSNNt256; // 336
+                                                                                                                                                                       $TSNNt257 = $contentDisposition; // 337
+                                                                                                                                                                       __log__ ("TSNNt257", $TSNNt257, 287);
+                                                                                                                                                                       $this->contentDisposition = $TSNNt257; // 338
+                                                                                                                                                                       $TSNNt258 = $contentID; // 339
+                                                                                                                                                                       __log__ ("TSNNt258", $TSNNt258, 289);
+                                                                                                                                                                       $this->contentID = $TSNNt258; // 340
+                                                                                                                                                                   }
+    public function build ()/* Entry: 341, Exit: 342, Exception Exit: 343 */ 
+                                                                            {
+                                                                                $TSNNt259 = $this->contentType; // 344
+                                                                                __log__ ("TSNNt259", $TSNNt259, 294);
+                                                                                $TLE59 = isset ($TSNNt259); // "345native call"
+                                                                                __log__ ("TLE59", $TLE59, 295);
+                                                                                if ($TLE59){
+                                                                                    $TLE60 = 'Content-Type: '; // 347
+                                                                                    __log__ ("TLE60", $TLE60, 297);
+                                                                                    $TSNNt260 = $this->contentType; // 348
+                                                                                    __log__ ("TSNNt260", $TSNNt260, 298);
+                                                                                    $TLE61 = $TLE60 . $TSNNt260; // 349
+                                                                                    __log__ ("TLE61", $TLE61, 299);
+                                                                                    $TLE62 = mimemail::LINE_BREAK_SEQUENCE; // 350
+                                                                                    __log__ ("TLE62", $TLE62, 300);
+                                                                                    $TEF9 = $TLE61 . $TLE62; // 351
+                                                                                    __log__ ("TEF9", $TEF9, 301);
+                                                                                }
+                                                                                else {
+                                                                                    $TEF9 = ''; // 352
+                                                                                    __log__ ("TEF9", $TEF9, 302);
+                                                                                }
+                                                                                $headers = $TEF9; // 353
+                                                                                __log__ ("headers", $headers, 303);
+                                                                                $TSNNt261 = $this->contentTransferEncoding; // 354
+                                                                                __log__ ("TSNNt261", $TSNNt261, 304);
+                                                                                $TLE63 = isset ($TSNNt261); // "355native call"
+                                                                                __log__ ("TLE63", $TLE63, 305);
+                                                                                if ($TLE63){
+                                                                                    $TLE64 = 'Content-Transfer-Encoding: '; // 357
+                                                                                    __log__ ("TLE64", $TLE64, 307);
+                                                                                    $TSNNt262 = $this->contentTransferEncoding; // 358
+                                                                                    __log__ ("TSNNt262", $TSNNt262, 308);
+                                                                                    $TLE65 = $TSNNt262->gettype ();// /* , Call: 361, Return: 362, Exception Return: 363, After: 359, Exception After: 360 */ method call
+                                                                                    __log__ ("TLE65", $TLE65, 309);
+                                                                                    $TLE66 = $TLE64 . $TLE65; // 364
+                                                                                    __log__ ("TLE66", $TLE66, 314);
+                                                                                    $TLE67 = mimemail::LINE_BREAK_SEQUENCE; // 365
+                                                                                    __log__ ("TLE67", $TLE67, 315);
+                                                                                    $TEF10 = $TLE66 . $TLE67; // 366
+                                                                                    __log__ ("TEF10", $TEF10, 316);
+                                                                                }
+                                                                                else {
+                                                                                    $TEF10 = ''; // 367
+                                                                                    __log__ ("TEF10", $TEF10, 317);
+                                                                                }
+                                                                                $headers = $headers . $TEF10; // 368
+                                                                                __log__ ("headers", $headers, 318);
+                                                                                $TSNNt263 = $this->contentDisposition; // 369
+                                                                                __log__ ("TSNNt263", $TSNNt263, 319);
+                                                                                $TLE68 = isset ($TSNNt263); // "370native call"
+                                                                                __log__ ("TLE68", $TLE68, 320);
+                                                                                if ($TLE68){
+                                                                                    $TLE69 = 'Content-Disposition: '; // 372
+                                                                                    __log__ ("TLE69", $TLE69, 322);
+                                                                                    $TSNNt264 = $this->contentDisposition; // 373
+                                                                                    __log__ ("TSNNt264", $TSNNt264, 323);
+                                                                                    $TLE70 = $TLE69 . $TSNNt264; // 374
+                                                                                    __log__ ("TLE70", $TLE70, 324);
+                                                                                    $TLE71 = mimemail::LINE_BREAK_SEQUENCE; // 375
+                                                                                    __log__ ("TLE71", $TLE71, 325);
+                                                                                    $TEF11 = $TLE70 . $TLE71; // 376
+                                                                                    __log__ ("TEF11", $TEF11, 326);
+                                                                                }
+                                                                                else {
+                                                                                    $TEF11 = ''; // 377
+                                                                                    __log__ ("TEF11", $TEF11, 327);
+                                                                                }
+                                                                                $headers = $headers . $TEF11; // 378
+                                                                                __log__ ("headers", $headers, 328);
+                                                                                $TSNNt265 = $this->contentID; // 379
+                                                                                __log__ ("TSNNt265", $TSNNt265, 329);
+                                                                                $TLE72 = isset ($TSNNt265); // "380native call"
+                                                                                __log__ ("TLE72", $TLE72, 330);
+                                                                                if ($TLE72){
+                                                                                    $TLE73 = 'Content-ID: '; // 382
+                                                                                    __log__ ("TLE73", $TLE73, 332);
+                                                                                    $TSNNt266 = $this->contentID; // 383
+                                                                                    __log__ ("TSNNt266", $TSNNt266, 333);
+                                                                                    $TLE74 = $TLE73 . $TSNNt266; // 384
+                                                                                    __log__ ("TLE74", $TLE74, 334);
+                                                                                    $TLE75 = mimemail::LINE_BREAK_SEQUENCE; // 385
+                                                                                    __log__ ("TLE75", $TLE75, 335);
+                                                                                    $TEF12 = $TLE74 . $TLE75; // 386
+                                                                                    __log__ ("TEF12", $TEF12, 336);
+                                                                                }
+                                                                                else {
+                                                                                    $TEF12 = ''; // 387
+                                                                                    __log__ ("TEF12", $TEF12, 337);
+                                                                                }
+                                                                                $headers = $headers . $TEF12; // 388
+                                                                                __log__ ("headers", $headers, 338);
+                                                                                $TLE76 = mimemail::LINE_BREAK_SEQUENCE; // 389
+                                                                                __log__ ("TLE76", $TLE76, 339);
+                                                                                $headers = $headers . $TLE76; // 390
+                                                                                __log__ ("headers", $headers, 340);
+                                                                                $TSNNt267 = $this->contentTransferEncoding; // 391
+                                                                                __log__ ("TSNNt267", $TSNNt267, 341);
+                                                                                $TSNNt268 = $this->content; // 392
+                                                                                __log__ ("TSNNt268", $TSNNt268, 342);
+                                                                                $TLE77 = $TSNNt267->encode ($TSNNt268);// /* , Call: 395, Return: 396, Exception Return: 397, After: 393, Exception After: 394 */ method call
+                                                                                __log__ ("TLE77", $TLE77, 343);
+                                                                                $headers = $headers . $TLE77; // 398
+                                                                                __log__ ("headers", $headers, 348);
+                                                                                $TLE78 = mimemail::LINE_BREAK_SEQUENCE; // 399
+                                                                                __log__ ("TLE78", $TLE78, 349);
+                                                                                $TLE79 = mimemail::LINE_BREAK_SEQUENCE; // 400
+                                                                                __log__ ("TLE79", $TLE79, 350);
+                                                                                $TLE80 = $TLE78 . $TLE79; // 401
+                                                                                __log__ ("TLE80", $TLE80, 351);
+                                                                                $headers = $headers . $TLE80; // 402
+                                                                                __log__ ("headers", $headers, 352);
+                                                                                return $headers; // 403
+                                                                            }
+}
+class compositemimeentity extends mimeentity { // "404"
+    protected $children;
+    protected $boundary;
+    public function __construct ()/* Entry: 405, Exit: 406, Exception Exit: 407 */ 
+                                                                                  {
+                                                                                      $TLE81 = 'This part of the E-mail should never be seen. If you are reading this, consider upgrading your e-mail client to a MIME-compatible client.'; // 408
+                                                                                      __log__ ("TLE81", $TLE81, 358);
+                                                                                      $TSNNt269 = $TLE81; // 409
+                                                                                      __log__ ("TSNNt269", $TSNNt269, 359);
+                                                                                      $this->content = $TSNNt269; // 410
+                                                                                      $TLE82 = new arraylist ();// /* , Call: 413, Return: 414, Exception Return: 415, After: 411, Exception After: 412 */ constructor call
+                                                                                      __log__ ("TLE82", $TLE82, 361);
+                                                                                      $TSNNt270 = $TLE82; // 416
+                                                                                      __log__ ("TSNNt270", $TSNNt270, 366);
+                                                                                      $this->children = $TSNNt270; // 417
+                                                                                      $TLE83 = 'XX'; // 418
+                                                                                      __log__ ("TLE83", $TLE83, 368);
+                                                                                      $TLE84 = 65; // 419
+                                                                                      __log__ ("TLE84", $TLE84, 369);
+                                                                                      $TLE85 = 90; // 420
+                                                                                      __log__ ("TLE85", $TLE85, 370);
+                                                                                      $TLE86 = rand ($TLE84, $TLE85); // "421native call"
+                                                                                      __log__ ("TLE86", $TLE86, 371);
+                                                                                      $TLE87 = chr ($TLE86); // "422native call"
+                                                                                      __log__ ("TLE87", $TLE87, 372);
+                                                                                      $TLE88 = $TLE83 . $TLE87; // 423
+                                                                                      __log__ ("TLE88", $TLE88, 373);
+                                                                                      $TLE89 = '------'; // 424
+                                                                                      __log__ ("TLE89", $TLE89, 374);
+                                                                                      $TLE90 = $TLE88 . $TLE89; // 425
+                                                                                      __log__ ("TLE90", $TLE90, 375);
+                                                                                      $TLE91 = 0; // 426
+                                                                                      __log__ ("TLE91", $TLE91, 376);
+                                                                                      $TLE92 = getrandmax (); // "427native call"
+                                                                                      __log__ ("TLE92", $TLE92, 377);
+                                                                                      $TLE93 = rand ($TLE91, $TLE92); // "428native call"
+                                                                                      __log__ ("TLE93", $TLE93, 378);
+                                                                                      $TLE94 = false; // 429
+                                                                                      __log__ ("TLE94", $TLE94, 379);
+                                                                                      $TLE95 = uniqid ($TLE93, $TLE94); // "430native call"
+                                                                                      __log__ ("TLE95", $TLE95, 380);
+                                                                                      $TLE96 = false; // 431
+                                                                                      __log__ ("TLE96", $TLE96, 381);
+                                                                                      $TLE97 = md5 ($TLE95, $TLE96); // "432native call"
+                                                                                      __log__ ("TLE97", $TLE97, 382);
+                                                                                      $TLE98 = $TLE90 . $TLE97; // 433
+                                                                                      __log__ ("TLE98", $TLE98, 383);
+                                                                                      $TSNNt271 = $TLE98; // 434
+                                                                                      __log__ ("TSNNt271", $TSNNt271, 384);
+                                                                                      $this->boundary = $TSNNt271; // 435
+                                                                                  }
+    public function add ($mimeEntity)/* Entry: 436, Exit: 437, Exception Exit: 438 */ 
+                                                                                     {
+                                                                                         $TSNNt272 = $this->children; // 439
+                                                                                         __log__ ("TSNNt272", $TSNNt272, 389);
+                                                                                         $TSNNt272->add ($mimeEntity);// /* , Call: 442, Return: 443, Exception Return: 444, After: 440, Exception After: 441 */ method call
+                                                                                     }
+    public function getboundary ()/* Entry: 445, Exit: 446, Exception Exit: 447 */ 
+                                                                                  {
+                                                                                      $TSNNt273 = $this->boundary; // 448
+                                                                                      __log__ ("TSNNt273", $TSNNt273, 398);
+                                                                                      return $TSNNt273; // 449
+                                                                                  }
+    public function build ()/* Entry: 450, Exit: 451, Exception Exit: 452 */ 
+                                                                            {
+                                                                                $headers = mimeentity::build ();// /* , Call: 455, Return: 456, Exception Return: 457, After: 453, Exception After: 454 */ resolved method call
+                                                                                __log__ ("headers", $headers, 403);
+                                                                                $i = 0; // 458
+                                                                                __log__ ("i", $i, 408);
+                                                                                $ElcfPF4 = true; // 459
+                                                                                __log__ ("ElcfPF4", $ElcfPF4, 409);
+                                                                                while (True){
+                                                                                    if ($ElcfPF4){
+                                                                                        $ElcfPF4 = false; // 462
+                                                                                        __log__ ("ElcfPF4", $ElcfPF4, 412);
+                                                                                    }
+                                                                                    else {
+                                                                                        ++$i; // 463
+                                                                                        __log__ ("i", $i, 413);
+                                                                                    }
+                                                                                    $TSNNt274 = $this->children; // 464
+                                                                                    __log__ ("TSNNt274", $TSNNt274, 414);
+                                                                                    $TLE99 = $TSNNt274->length ();// /* , Call: 467, Return: 468, Exception Return: 469, After: 465, Exception After: 466 */ method call
+                                                                                    __log__ ("TLE99", $TLE99, 415);
+                                                                                    $TLE100 = $i < $TLE99; // 470
+                                                                                    __log__ ("TLE100", $TLE100, 420);
+                                                                                    if ($TLE100){
+                                                                                         // "472 skip"
+                                                                                    }
+                                                                                    else {
+                                                                                        break; // 473
+                                                                                    }
+                                                                                    $TLE101 = '--'; // 474
+                                                                                    __log__ ("TLE101", $TLE101, 424);
+                                                                                    $TLE102 = $this->getboundary ();// /* , Call: 477, Return: 478, Exception Return: 479, After: 475, Exception After: 476 */ method call
+                                                                                    __log__ ("TLE102", $TLE102, 425);
+                                                                                    $TLE103 = $TLE101 . $TLE102; // 480
+                                                                                    __log__ ("TLE103", $TLE103, 430);
+                                                                                    $TLE104 = mimemail::LINE_BREAK_SEQUENCE; // 481
+                                                                                    __log__ ("TLE104", $TLE104, 431);
+                                                                                    $TLE105 = $TLE103 . $TLE104; // 482
+                                                                                    __log__ ("TLE105", $TLE105, 432);
+                                                                                    $headers = $headers . $TLE105; // 483
+                                                                                    __log__ ("headers", $headers, 433);
+                                                                                    $TSNNt275 = $this->children; // 484
+                                                                                    __log__ ("TSNNt275", $TSNNt275, 434);
+                                                                                    $TLE106 = $TSNNt275->get ($i);// /* , Call: 487, Return: 488, Exception Return: 489, After: 485, Exception After: 486 */ method call
+                                                                                    __log__ ("TLE106", $TLE106, 435);
+                                                                                    $TLE107 = $TLE106->build ();// /* , Call: 492, Return: 493, Exception Return: 494, After: 490, Exception After: 491 */ method call
+                                                                                    __log__ ("TLE107", $TLE107, 440);
+                                                                                    $headers = $headers . $TLE107; // 495
+                                                                                    __log__ ("headers", $headers, 445);
+                                                                                }
+                                                                                $TLE108 = '--'; // 496
+                                                                                __log__ ("TLE108", $TLE108, 446);
+                                                                                $TLE109 = $this->getboundary ();// /* , Call: 499, Return: 500, Exception Return: 501, After: 497, Exception After: 498 */ method call
+                                                                                __log__ ("TLE109", $TLE109, 447);
+                                                                                $TLE110 = $TLE108 . $TLE109; // 502
+                                                                                __log__ ("TLE110", $TLE110, 452);
+                                                                                $TLE111 = '--'; // 503
+                                                                                __log__ ("TLE111", $TLE111, 453);
+                                                                                $TLE112 = $TLE110 . $TLE111; // 504
+                                                                                __log__ ("TLE112", $TLE112, 454);
+                                                                                $TLE113 = mimemail::LINE_BREAK_SEQUENCE; // 505
+                                                                                __log__ ("TLE113", $TLE113, 455);
+                                                                                $TLE114 = $TLE112 . $TLE113; // 506
+                                                                                __log__ ("TLE114", $TLE114, 456);
+                                                                                $headers = $headers . $TLE114; // 507
+                                                                                __log__ ("headers", $headers, 457);
+                                                                                return $headers; // 508
+                                                                            }
+}
+class alternativemimeentity extends compositemimeentity { // "509"
+    public function __construct ()/* Entry: 510, Exit: 511, Exception Exit: 512 */ 
+                                                                                  {
+                                                                                      compositemimeentity::__construct ();// /* , Call: 515, Return: 516, Exception Return: 517, After: 513, Exception After: 514 */ resolved method call
+                                                                                      $TLE115 = 'multipart/alternative; boundary=%s'; // 518
+                                                                                      __log__ ("TLE115", $TLE115, 468);
+                                                                                      $TLE116 = $this->getboundary ();// /* , Call: 521, Return: 522, Exception Return: 523, After: 519, Exception After: 520 */ method call
+                                                                                      __log__ ("TLE116", $TLE116, 469);
+                                                                                      $TLE117 = sprintf ($TLE115, $TLE116); // "524native call"
+                                                                                      __log__ ("TLE117", $TLE117, 474);
+                                                                                      $TSNNt276 = $TLE117; // 525
+                                                                                      __log__ ("TSNNt276", $TSNNt276, 475);
+                                                                                      $this->contentType = $TSNNt276; // 526
+                                                                                      $TLE118 = sevenbitencoding::getinstance ();// /* , Call: 529, Return: 530, Exception Return: 531, After: 527, Exception After: 528 */ static method call
+                                                                                      __log__ ("TLE118", $TLE118, 477);
+                                                                                      $TSNNt277 = $TLE118; // 532
+                                                                                      __log__ ("TSNNt277", $TSNNt277, 482);
+                                                                                      $this->contentTransferEncoding = $TSNNt277; // 533
+                                                                                  }
+}
+class mixedmimeentity extends compositemimeentity { // "534"
+    public function __construct ()/* Entry: 535, Exit: 536, Exception Exit: 537 */ 
+                                                                                  {
+                                                                                      compositemimeentity::__construct ();// /* , Call: 540, Return: 541, Exception Return: 542, After: 538, Exception After: 539 */ resolved method call
+                                                                                      $TLE119 = 'multipart/mixed; boundary=%s'; // 543
+                                                                                      __log__ ("TLE119", $TLE119, 493);
+                                                                                      $TLE120 = $this->getboundary ();// /* , Call: 546, Return: 547, Exception Return: 548, After: 544, Exception After: 545 */ method call
+                                                                                      __log__ ("TLE120", $TLE120, 494);
+                                                                                      $TLE121 = sprintf ($TLE119, $TLE120); // "549native call"
+                                                                                      __log__ ("TLE121", $TLE121, 499);
+                                                                                      $TSNNt278 = $TLE121; // 550
+                                                                                      __log__ ("TSNNt278", $TSNNt278, 500);
+                                                                                      $this->contentType = $TSNNt278; // 551
+                                                                                      $TLE122 = sevenbitencoding::getinstance ();// /* , Call: 554, Return: 555, Exception Return: 556, After: 552, Exception After: 553 */ static method call
+                                                                                      __log__ ("TLE122", $TLE122, 502);
+                                                                                      $TSNNt279 = $TLE122; // 557
+                                                                                      __log__ ("TSNNt279", $TSNNt279, 507);
+                                                                                      $this->contentTransferEncoding = $TSNNt279; // 558
+                                                                                  }
+}
+class relatedmimeentity extends compositemimeentity { // "559"
+    public function __construct ()/* Entry: 560, Exit: 561, Exception Exit: 562 */ 
+                                                                                  {
+                                                                                      compositemimeentity::__construct ();// /* , Call: 565, Return: 566, Exception Return: 567, After: 563, Exception After: 564 */ resolved method call
+                                                                                      $TLE123 = 'multipart/related; boundary=%s'; // 568
+                                                                                      __log__ ("TLE123", $TLE123, 518);
+                                                                                      $TLE124 = $this->getboundary ();// /* , Call: 571, Return: 572, Exception Return: 573, After: 569, Exception After: 570 */ method call
+                                                                                      __log__ ("TLE124", $TLE124, 519);
+                                                                                      $TLE125 = sprintf ($TLE123, $TLE124); // "574native call"
+                                                                                      __log__ ("TLE125", $TLE125, 524);
+                                                                                      $TSNNt280 = $TLE125; // 575
+                                                                                      __log__ ("TSNNt280", $TSNNt280, 525);
+                                                                                      $this->contentType = $TSNNt280; // 576
+                                                                                      $TLE126 = sevenbitencoding::getinstance ();// /* , Call: 579, Return: 580, Exception Return: 581, After: 577, Exception After: 578 */ static method call
+                                                                                      __log__ ("TLE126", $TLE126, 527);
+                                                                                      $TSNNt281 = $TLE126; // 582
+                                                                                      __log__ ("TSNNt281", $TSNNt281, 532);
+                                                                                      $this->contentTransferEncoding = $TSNNt281; // 583
+                                                                                  }
+}
+class mimemail implements mailable { // "584"
+    const LINE_BREAK_SEQUENCE = '\n';
+    protected $rootMimeEntity = null;
+    protected $subject;
+    protected $fromAddress;
+    protected $version = '1.0';
+    protected $toAddresses;
+    protected $ccAddresses;
+    protected $bccAddresses;
+    public function __construct ($fromAddress, $subject)/* Entry: 585, Exit: 586, Exception Exit: 587 */ 
+                                                                                                        {
+                                                                                                            $TSNNt282 = $fromAddress; // 588
+                                                                                                            __log__ ("TSNNt282", $TSNNt282, 538);
+                                                                                                            $this->fromAddress = $TSNNt282; // 589
+                                                                                                            $TSNNt283 = $subject; // 590
+                                                                                                            __log__ ("TSNNt283", $TSNNt283, 540);
+                                                                                                            $this->subject = $TSNNt283; // 591
+                                                                                                            $TLE127 = new arraylist ();// /* , Call: 594, Return: 595, Exception Return: 596, After: 592, Exception After: 593 */ constructor call
+                                                                                                            __log__ ("TLE127", $TLE127, 542);
+                                                                                                            $TSNNt284 = $TLE127; // 597
+                                                                                                            __log__ ("TSNNt284", $TSNNt284, 547);
+                                                                                                            $this->toAddresses = $TSNNt284; // 598
+                                                                                                            $TLE128 = new arraylist ();// /* , Call: 601, Return: 602, Exception Return: 603, After: 599, Exception After: 600 */ constructor call
+                                                                                                            __log__ ("TLE128", $TLE128, 549);
+                                                                                                            $TSNNt285 = $TLE128; // 604
+                                                                                                            __log__ ("TSNNt285", $TSNNt285, 554);
+                                                                                                            $this->ccAddresses = $TSNNt285; // 605
+                                                                                                            $TLE129 = new arraylist ();// /* , Call: 608, Return: 609, Exception Return: 610, After: 606, Exception After: 607 */ constructor call
+                                                                                                            __log__ ("TLE129", $TLE129, 556);
+                                                                                                            $TSNNt286 = $TLE129; // 611
+                                                                                                            __log__ ("TSNNt286", $TSNNt286, 561);
+                                                                                                            $this->bccAddresses = $TSNNt286; // 612
+                                                                                                        }
+    public function getversion ()/* Entry: 613, Exit: 614, Exception Exit: 615 */ 
+                                                                                 {
+                                                                                     $TSNNt287 = $this->version; // 616
+                                                                                     __log__ ("TSNNt287", $TSNNt287, 566);
+                                                                                     return $TSNNt287; // 617
+                                                                                 }
+    protected function getdate ()/* Entry: 618, Exit: 619, Exception Exit: 620 */ 
+                                                                                 {
+                                                                                     $TLE130 = 'r'; // 621
+                                                                                     __log__ ("TLE130", $TLE130, 571);
+                                                                                     $TLE131 = time (); // "622native call"
+                                                                                     __log__ ("TLE131", $TLE131, 572);
+                                                                                     $TLE132 = date ($TLE130, $TLE131); // "623native call"
+                                                                                     __log__ ("TLE132", $TLE132, 573);
+                                                                                     return $TLE132; // 624
+                                                                                 }
+    public function hasfromaddress ()/* Entry: 625, Exit: 626, Exception Exit: 627 */ 
+                                                                                     {
+                                                                                         $TSNNt288 = $this->fromAddress; // 628
+                                                                                         __log__ ("TSNNt288", $TSNNt288, 578);
+                                                                                         if ($TSNNt288){
+                                                                                             $TEF13 = true; // 630
+                                                                                             __log__ ("TEF13", $TEF13, 580);
+                                                                                         }
+                                                                                         else {
+                                                                                             $TEF13 = false; // 631
+                                                                                             __log__ ("TEF13", $TEF13, 581);
+                                                                                         }
+                                                                                         return $TEF13; // 632
+                                                                                     }
+    public function setfromaddress ($fromAddress)/* Entry: 633, Exit: 634, Exception Exit: 635 */ 
+                                                                                                 {
+                                                                                                     $TSNNt289 = $fromAddress; // 636
+                                                                                                     __log__ ("TSNNt289", $TSNNt289, 586);
+                                                                                                     $this->fromAddress = $TSNNt289; // 637
+                                                                                                 }
+    public function setsubject ($subject)/* Entry: 638, Exit: 639, Exception Exit: 640 */ 
+                                                                                         {
+                                                                                             $TSNNt290 = $subject; // 641
+                                                                                             __log__ ("TSNNt290", $TSNNt290, 591);
+                                                                                             $this->subject = $TSNNt290; // 642
+                                                                                         }
+    public function hassubject ()/* Entry: 643, Exit: 644, Exception Exit: 645 */ 
+                                                                                 {
+                                                                                     $TSNNt291 = $this->subject; // 646
+                                                                                     __log__ ("TSNNt291", $TSNNt291, 596);
+                                                                                     if ($TSNNt291){
+                                                                                         $TEF14 = true; // 648
+                                                                                         __log__ ("TEF14", $TEF14, 598);
+                                                                                     }
+                                                                                     else {
+                                                                                         $TEF14 = false; // 649
+                                                                                         __log__ ("TEF14", $TEF14, 599);
+                                                                                     }
+                                                                                     return $TEF14; // 650
+                                                                                 }
+    public function getsubject ()/* Entry: 651, Exit: 652, Exception Exit: 653 */ 
+                                                                                 {
+                                                                                     $TSNNt292 = $this->subject; // 654
+                                                                                     __log__ ("TSNNt292", $TSNNt292, 604);
+                                                                                     return $TSNNt292; // 655
+                                                                                 }
+    public function addtoaddress ($address)/* Entry: 656, Exit: 657, Exception Exit: 658 */ 
+                                                                                           {
+                                                                                               $TSNNt293 = $this->toAddresses; // 659
+                                                                                               __log__ ("TSNNt293", $TSNNt293, 609);
+                                                                                               $TSNNt293->add ($address);// /* , Call: 662, Return: 663, Exception Return: 664, After: 660, Exception After: 661 */ method call
+                                                                                           }
+    public function removetoaddresses ()/* Entry: 665, Exit: 666, Exception Exit: 667 */ 
+                                                                                        {
+                                                                                            $TLE133 = new arraylist ();// /* , Call: 670, Return: 671, Exception Return: 672, After: 668, Exception After: 669 */ constructor call
+                                                                                            __log__ ("TLE133", $TLE133, 618);
+                                                                                            $TSNNt294 = $TLE133; // 673
+                                                                                            __log__ ("TSNNt294", $TSNNt294, 623);
+                                                                                            $this->toAddresses = $TSNNt294; // 674
+                                                                                        }
+    public function gettoaddresses ()/* Entry: 675, Exit: 676, Exception Exit: 677 */ 
+                                                                                     {
+                                                                                         $TSNNt295 = $this->toAddresses; // 678
+                                                                                         __log__ ("TSNNt295", $TSNNt295, 628);
+                                                                                         return $TSNNt295; // 679
+                                                                                     }
+    public function addccaddress ($address)/* Entry: 680, Exit: 681, Exception Exit: 682 */ 
+                                                                                           {
+                                                                                               $TSNNt296 = $this->ccAddresses; // 683
+                                                                                               __log__ ("TSNNt296", $TSNNt296, 633);
+                                                                                               $TSNNt296->add ($address);// /* , Call: 686, Return: 687, Exception Return: 688, After: 684, Exception After: 685 */ method call
+                                                                                           }
+    public function addbccaddress ($address)/* Entry: 689, Exit: 690, Exception Exit: 691 */ 
+                                                                                            {
+                                                                                                $TSNNt297 = $this->bccAddresses; // 692
+                                                                                                __log__ ("TSNNt297", $TSNNt297, 642);
+                                                                                                $TSNNt297->add ($address);// /* , Call: 695, Return: 696, Exception Return: 697, After: 693, Exception After: 694 */ method call
+                                                                                            }
+    public function setrootmimeentity ($rootMimeEntity)/* Entry: 698, Exit: 699, Exception Exit: 700 */ 
+                                                                                                       {
+                                                                                                           $TSNNt298 = $rootMimeEntity; // 701
+                                                                                                           __log__ ("TSNNt298", $TSNNt298, 651);
+                                                                                                           $this->rootMimeEntity = $TSNNt298; // 702
+                                                                                                       }
+    public function hasrootmimeentity ()/* Entry: 703, Exit: 704, Exception Exit: 705 */ 
+                                                                                        {
+                                                                                            $TSNNt299 = $this->rootMimeEntity; // 706
+                                                                                            __log__ ("TSNNt299", $TSNNt299, 656);
+                                                                                            if ($TSNNt299){
+                                                                                                $TEF15 = true; // 708
+                                                                                                __log__ ("TEF15", $TEF15, 658);
+                                                                                            }
+                                                                                            else {
+                                                                                                $TEF15 = false; // 709
+                                                                                                __log__ ("TEF15", $TEF15, 659);
+                                                                                            }
+                                                                                            return $TEF15; // 710
+                                                                                        }
+    public function build ()/* Entry: 711, Exit: 712, Exception Exit: 713 */ 
+                                                                            {
+                                                                                $TLE134 = $this->hasfromaddress ();// /* , Call: 716, Return: 717, Exception Return: 718, After: 714, Exception After: 715 */ method call
+                                                                                __log__ ("TLE134", $TLE134, 664);
+                                                                                $TLE135 = !$TLE134; // 719
+                                                                                __log__ ("TLE135", $TLE135, 669);
+                                                                                if ($TLE135){
+                                                                                    $TLE136 = 'The from address doesn\'t exists.'; // 721
+                                                                                    __log__ ("TLE136", $TLE136, 671);
+                                                                                    $TLE137 = new mailexception ($TLE136);// /* , Call: 724, Return: 725, Exception Return: 726, After: 722, Exception After: 723 */ constructor call
+                                                                                    __log__ ("TLE137", $TLE137, 672);
+                                                                                    throw $TLE137; // 727
+                                                                                }
+                                                                                else {
+                                                                                     // "728 skip"
+                                                                                }
+                                                                                $TLE138 = $this->hassubject ();// /* , Call: 731, Return: 732, Exception Return: 733, After: 729, Exception After: 730 */ method call
+                                                                                __log__ ("TLE138", $TLE138, 679);
+                                                                                $TLE139 = !$TLE138; // 734
+                                                                                __log__ ("TLE139", $TLE139, 684);
+                                                                                if ($TLE139){
+                                                                                    $TLE140 = 'The subject doesn\'t exists.'; // 736
+                                                                                    __log__ ("TLE140", $TLE140, 686);
+                                                                                    $TLE141 = new mailexception ($TLE140);// /* , Call: 739, Return: 740, Exception Return: 741, After: 737, Exception After: 738 */ constructor call
+                                                                                    __log__ ("TLE141", $TLE141, 687);
+                                                                                    throw $TLE141; // 742
+                                                                                }
+                                                                                else {
+                                                                                     // "743 skip"
+                                                                                }
+                                                                                $TSNNt300 = $this->toAddresses; // 744
+                                                                                __log__ ("TSNNt300", $TSNNt300, 694);
+                                                                                $TLE16 = $TSNNt300->isempty ();// /* , Call: 747, Return: 748, Exception Return: 749, After: 745, Exception After: 746 */ method call
+                                                                                __log__ ("TLE16", $TLE16, 695);
+                                                                                if ($TLE16){
+                                                                                    $TSNNt301 = $this->ccAddresses; // 751
+                                                                                    __log__ ("TSNNt301", $TSNNt301, 701);
+                                                                                    $TEF17 = $TSNNt301->isempty ();// /* , Call: 754, Return: 755, Exception Return: 756, After: 752, Exception After: 753 */ method call
+                                                                                    __log__ ("TEF17", $TEF17, 702);
+                                                                                }
+                                                                                else {
+                                                                                    $TEF17 = $TLE16; // 757
+                                                                                    __log__ ("TEF17", $TEF17, 707);
+                                                                                }
+                                                                                $TLE18 = (bool) $TEF17; // 758
+                                                                                __log__ ("TLE18", $TLE18, 708);
+                                                                                if ($TLE18){
+                                                                                    $TSNNt302 = $this->bccAddresses; // 760
+                                                                                    __log__ ("TSNNt302", $TSNNt302, 710);
+                                                                                    $TEF19 = $TSNNt302->isempty ();// /* , Call: 763, Return: 764, Exception Return: 765, After: 761, Exception After: 762 */ method call
+                                                                                    __log__ ("TEF19", $TEF19, 711);
+                                                                                }
+                                                                                else {
+                                                                                    $TEF19 = $TLE18; // 766
+                                                                                    __log__ ("TEF19", $TEF19, 716);
+                                                                                }
+                                                                                $TLE142 = (bool) $TEF19; // 767
+                                                                                __log__ ("TLE142", $TLE142, 717);
+                                                                                if ($TLE142){
+                                                                                    $TLE143 = 'There is no valid to, cc or bcc address'; // 769
+                                                                                    __log__ ("TLE143", $TLE143, 719);
+                                                                                    $TLE144 = new mailexception ($TLE143);// /* , Call: 772, Return: 773, Exception Return: 774, After: 770, Exception After: 771 */ constructor call
+                                                                                    __log__ ("TLE144", $TLE144, 720);
+                                                                                    throw $TLE144; // 775
+                                                                                }
+                                                                                else {
+                                                                                     // "776 skip"
+                                                                                }
+                                                                                $TLE145 = $this->hasrootmimeentity ();// /* , Call: 779, Return: 780, Exception Return: 781, After: 777, Exception After: 778 */ method call
+                                                                                __log__ ("TLE145", $TLE145, 727);
+                                                                                $TLE146 = !$TLE145; // 782
+                                                                                __log__ ("TLE146", $TLE146, 732);
+                                                                                if ($TLE146){
+                                                                                    $TLE147 = 'The root mime entity doesn\'t exists.'; // 784
+                                                                                    __log__ ("TLE147", $TLE147, 734);
+                                                                                    $TLE148 = new mailexception ($TLE147);// /* , Call: 787, Return: 788, Exception Return: 789, After: 785, Exception After: 786 */ constructor call
+                                                                                    __log__ ("TLE148", $TLE148, 735);
+                                                                                    throw $TLE148; // 790
+                                                                                }
+                                                                                else {
+                                                                                     // "791 skip"
+                                                                                }
+                                                                                $TLE149 = 'MIME-Version: '; // 792
+                                                                                __log__ ("TLE149", $TLE149, 742);
+                                                                                $TLE150 = $this->getversion ();// /* , Call: 795, Return: 796, Exception Return: 797, After: 793, Exception After: 794 */ method call
+                                                                                __log__ ("TLE150", $TLE150, 743);
+                                                                                $TLE151 = $TLE149 . $TLE150; // 798
+                                                                                __log__ ("TLE151", $TLE151, 748);
+                                                                                $TLE152 = mimemail::LINE_BREAK_SEQUENCE; // 799
+                                                                                __log__ ("TLE152", $TLE152, 749);
+                                                                                $headers = $TLE151 . $TLE152; // 800
+                                                                                __log__ ("headers", $headers, 750);
+                                                                                $TLE153 = 'From: '; // 801
+                                                                                __log__ ("TLE153", $TLE153, 751);
+                                                                                $TSNNt303 = $this->fromAddress; // 802
+                                                                                __log__ ("TSNNt303", $TSNNt303, 752);
+                                                                                $TLE154 = $TLE153 . $TSNNt303; // 803
+                                                                                __log__ ("TLE154", $TLE154, 753);
+                                                                                $TLE155 = mimemail::LINE_BREAK_SEQUENCE; // 804
+                                                                                __log__ ("TLE155", $TLE155, 754);
+                                                                                $TLE156 = $TLE154 . $TLE155; // 805
+                                                                                __log__ ("TLE156", $TLE156, 755);
+                                                                                $headers = $headers . $TLE156; // 806
+                                                                                __log__ ("headers", $headers, 756);
+                                                                                $TSNNt304 = $this->toAddresses; // 807
+                                                                                __log__ ("TSNNt304", $TSNNt304, 757);
+                                                                                $TLE157 = $TSNNt304->isempty ();// /* , Call: 810, Return: 811, Exception Return: 812, After: 808, Exception After: 809 */ method call
+                                                                                __log__ ("TLE157", $TLE157, 758);
+                                                                                $TLE158 = !$TLE157; // 813
+                                                                                __log__ ("TLE158", $TLE158, 763);
+                                                                                if ($TLE158){
+                                                                                    unset ($TSa159); // 815
+                                                                                    $TSa159 = (array) $TSa159; // 816
+                                                                                    __log__ ("TSa159", $TSa159, 766);
+                                                                                    $toAddresses = $TSa159; // 817
+                                                                                    __log__ ("toAddresses", $toAddresses, 767);
+                                                                                    $i = 0; // 818
+                                                                                    __log__ ("i", $i, 768);
+                                                                                    $ElcfPF5 = true; // 819
+                                                                                    __log__ ("ElcfPF5", $ElcfPF5, 769);
+                                                                                    while (True){
+                                                                                        if ($ElcfPF5){
+                                                                                            $ElcfPF5 = false; // 822
+                                                                                            __log__ ("ElcfPF5", $ElcfPF5, 772);
+                                                                                        }
+                                                                                        else {
+                                                                                            ++$i; // 823
+                                                                                            __log__ ("i", $i, 773);
+                                                                                        }
+                                                                                        $TSNNt305 = $this->toAddresses; // 824
+                                                                                        __log__ ("TSNNt305", $TSNNt305, 774);
+                                                                                        $TLE160 = $TSNNt305->length ();// /* , Call: 827, Return: 828, Exception Return: 829, After: 825, Exception After: 826 */ method call
+                                                                                        __log__ ("TLE160", $TLE160, 775);
+                                                                                        $TLE161 = $i < $TLE160; // 830
+                                                                                        __log__ ("TLE161", $TLE161, 780);
+                                                                                        if ($TLE161){
+                                                                                             // "832 skip"
+                                                                                        }
+                                                                                        else {
+                                                                                            break; // 833
+                                                                                        }
+                                                                                        $TLE162 = sizeof ($toAddresses); // "834native call"
+                                                                                        __log__ ("TLE162", $TLE162, 784);
+                                                                                        $TSNNt306 = $this->toAddresses; // 835
+                                                                                        __log__ ("TSNNt306", $TSNNt306, 785);
+                                                                                        $TLE163 = $TSNNt306->get ($i);// /* , Call: 838, Return: 839, Exception Return: 840, After: 836, Exception After: 837 */ method call
+                                                                                        __log__ ("TLE163", $TLE163, 786);
+                                                                                        $toAddresses[$TLE162] = $TLE163; // 841
+                                                                                    }
+                                                                                    $TLE164 = 'To: '; // 842
+                                                                                    __log__ ("TLE164", $TLE164, 792);
+                                                                                    $TLE165 = ', '; // 843
+                                                                                    __log__ ("TLE165", $TLE165, 793);
+                                                                                    $TLE166 = implode ($TLE165, $toAddresses); // "844native call"
+                                                                                    __log__ ("TLE166", $TLE166, 794);
+                                                                                    $TLE167 = $TLE164 . $TLE166; // 845
+                                                                                    __log__ ("TLE167", $TLE167, 795);
+                                                                                    $TLE168 = mimemail::LINE_BREAK_SEQUENCE; // 846
+                                                                                    __log__ ("TLE168", $TLE168, 796);
+                                                                                    $TLE169 = $TLE167 . $TLE168; // 847
+                                                                                    __log__ ("TLE169", $TLE169, 797);
+                                                                                    $headers = $headers . $TLE169; // 848
+                                                                                    __log__ ("headers", $headers, 798);
+                                                                                }
+                                                                                else {
+                                                                                     // "849 skip"
+                                                                                }
+                                                                                $TSNNt307 = $this->ccAddresses; // 850
+                                                                                __log__ ("TSNNt307", $TSNNt307, 800);
+                                                                                $TLE170 = $TSNNt307->isempty ();// /* , Call: 853, Return: 854, Exception Return: 855, After: 851, Exception After: 852 */ method call
+                                                                                __log__ ("TLE170", $TLE170, 801);
+                                                                                $TLE171 = !$TLE170; // 856
+                                                                                __log__ ("TLE171", $TLE171, 806);
+                                                                                if ($TLE171){
+                                                                                    unset ($TSa172); // 858
+                                                                                    $TSa172 = (array) $TSa172; // 859
+                                                                                    __log__ ("TSa172", $TSa172, 809);
+                                                                                    $ccAddresses = $TSa172; // 860
+                                                                                    __log__ ("ccAddresses", $ccAddresses, 810);
+                                                                                    $i = 0; // 861
+                                                                                    __log__ ("i", $i, 811);
+                                                                                    $ElcfPF6 = true; // 862
+                                                                                    __log__ ("ElcfPF6", $ElcfPF6, 812);
+                                                                                    while (True){
+                                                                                        if ($ElcfPF6){
+                                                                                            $ElcfPF6 = false; // 865
+                                                                                            __log__ ("ElcfPF6", $ElcfPF6, 815);
+                                                                                        }
+                                                                                        else {
+                                                                                            ++$i; // 866
+                                                                                            __log__ ("i", $i, 816);
+                                                                                        }
+                                                                                        $TSNNt308 = $this->ccAddresses; // 867
+                                                                                        __log__ ("TSNNt308", $TSNNt308, 817);
+                                                                                        $TLE173 = $TSNNt308->length ();// /* , Call: 870, Return: 871, Exception Return: 872, After: 868, Exception After: 869 */ method call
+                                                                                        __log__ ("TLE173", $TLE173, 818);
+                                                                                        $TLE174 = $i < $TLE173; // 873
+                                                                                        __log__ ("TLE174", $TLE174, 823);
+                                                                                        if ($TLE174){
+                                                                                             // "875 skip"
+                                                                                        }
+                                                                                        else {
+                                                                                            break; // 876
+                                                                                        }
+                                                                                        $TLE175 = sizeof ($ccAddresses); // "877native call"
+                                                                                        __log__ ("TLE175", $TLE175, 827);
+                                                                                        $TSNNt309 = $this->ccAddresses; // 878
+                                                                                        __log__ ("TSNNt309", $TSNNt309, 828);
+                                                                                        $TLE176 = $TSNNt309->get ($i);// /* , Call: 881, Return: 882, Exception Return: 883, After: 879, Exception After: 880 */ method call
+                                                                                        __log__ ("TLE176", $TLE176, 829);
+                                                                                        $ccAddresses[$TLE175] = $TLE176; // 884
+                                                                                    }
+                                                                                    $TLE177 = 'Cc: '; // 885
+                                                                                    __log__ ("TLE177", $TLE177, 835);
+                                                                                    $TLE178 = ', '; // 886
+                                                                                    __log__ ("TLE178", $TLE178, 836);
+                                                                                    $TLE179 = implode ($TLE178, $ccAddresses); // "887native call"
+                                                                                    __log__ ("TLE179", $TLE179, 837);
+                                                                                    $TLE180 = $TLE177 . $TLE179; // 888
+                                                                                    __log__ ("TLE180", $TLE180, 838);
+                                                                                    $TLE181 = mimemail::LINE_BREAK_SEQUENCE; // 889
+                                                                                    __log__ ("TLE181", $TLE181, 839);
+                                                                                    $TLE182 = $TLE180 . $TLE181; // 890
+                                                                                    __log__ ("TLE182", $TLE182, 840);
+                                                                                    $headers = $headers . $TLE182; // 891
+                                                                                    __log__ ("headers", $headers, 841);
+                                                                                }
+                                                                                else {
+                                                                                     // "892 skip"
+                                                                                }
+                                                                                $TSNNt310 = $this->bccAddresses; // 893
+                                                                                __log__ ("TSNNt310", $TSNNt310, 843);
+                                                                                $TLE183 = $TSNNt310->isempty ();// /* , Call: 896, Return: 897, Exception Return: 898, After: 894, Exception After: 895 */ method call
+                                                                                __log__ ("TLE183", $TLE183, 844);
+                                                                                $TLE184 = !$TLE183; // 899
+                                                                                __log__ ("TLE184", $TLE184, 849);
+                                                                                if ($TLE184){
+                                                                                    unset ($TSa185); // 901
+                                                                                    $TSa185 = (array) $TSa185; // 902
+                                                                                    __log__ ("TSa185", $TSa185, 852);
+                                                                                    $bccAddresses = $TSa185; // 903
+                                                                                    __log__ ("bccAddresses", $bccAddresses, 853);
+                                                                                    $i = 0; // 904
+                                                                                    __log__ ("i", $i, 854);
+                                                                                    $ElcfPF7 = true; // 905
+                                                                                    __log__ ("ElcfPF7", $ElcfPF7, 855);
+                                                                                    while (True){
+                                                                                        if ($ElcfPF7){
+                                                                                            $ElcfPF7 = false; // 908
+                                                                                            __log__ ("ElcfPF7", $ElcfPF7, 858);
+                                                                                        }
+                                                                                        else {
+                                                                                            ++$i; // 909
+                                                                                            __log__ ("i", $i, 859);
+                                                                                        }
+                                                                                        $TSNNt311 = $this->bccAddresses; // 910
+                                                                                        __log__ ("TSNNt311", $TSNNt311, 860);
+                                                                                        $TLE186 = $TSNNt311->length ();// /* , Call: 913, Return: 914, Exception Return: 915, After: 911, Exception After: 912 */ method call
+                                                                                        __log__ ("TLE186", $TLE186, 861);
+                                                                                        $TLE187 = $i < $TLE186; // 916
+                                                                                        __log__ ("TLE187", $TLE187, 866);
+                                                                                        if ($TLE187){
+                                                                                             // "918 skip"
+                                                                                        }
+                                                                                        else {
+                                                                                            break; // 919
+                                                                                        }
+                                                                                        $TLE188 = sizeof ($bccAddresses); // "920native call"
+                                                                                        __log__ ("TLE188", $TLE188, 870);
+                                                                                        $TSNNt312 = $this->bccAddresses; // 921
+                                                                                        __log__ ("TSNNt312", $TSNNt312, 871);
+                                                                                        $TLE189 = $TSNNt312->get ($i);// /* , Call: 924, Return: 925, Exception Return: 926, After: 922, Exception After: 923 */ method call
+                                                                                        __log__ ("TLE189", $TLE189, 872);
+                                                                                        $bccAddresses[$TLE188] = $TLE189; // 927
+                                                                                    }
+                                                                                    $TLE190 = 'Bcc:  '; // 928
+                                                                                    __log__ ("TLE190", $TLE190, 878);
+                                                                                    $TLE191 = ', '; // 929
+                                                                                    __log__ ("TLE191", $TLE191, 879);
+                                                                                    $TLE192 = implode ($TLE191, $bccAddresses); // "930native call"
+                                                                                    __log__ ("TLE192", $TLE192, 880);
+                                                                                    $TLE193 = $TLE190 . $TLE192; // 931
+                                                                                    __log__ ("TLE193", $TLE193, 881);
+                                                                                    $TLE194 = mimemail::LINE_BREAK_SEQUENCE; // 932
+                                                                                    __log__ ("TLE194", $TLE194, 882);
+                                                                                    $TLE195 = $TLE193 . $TLE194; // 933
+                                                                                    __log__ ("TLE195", $TLE195, 883);
+                                                                                    $headers = $headers . $TLE195; // 934
+                                                                                    __log__ ("headers", $headers, 884);
+                                                                                }
+                                                                                else {
+                                                                                     // "935 skip"
+                                                                                }
+                                                                                $TLE196 = 'Date: '; // 936
+                                                                                __log__ ("TLE196", $TLE196, 886);
+                                                                                $TLE197 = $this->getdate ();// /* , Call: 939, Return: 940, Exception Return: 941, After: 937, Exception After: 938 */ method call
+                                                                                __log__ ("TLE197", $TLE197, 887);
+                                                                                $TLE198 = $TLE196 . $TLE197; // 942
+                                                                                __log__ ("TLE198", $TLE198, 892);
+                                                                                $TLE199 = mimemail::LINE_BREAK_SEQUENCE; // 943
+                                                                                __log__ ("TLE199", $TLE199, 893);
+                                                                                $TLE200 = $TLE198 . $TLE199; // 944
+                                                                                __log__ ("TLE200", $TLE200, 894);
+                                                                                $headers = $headers . $TLE200; // 945
+                                                                                __log__ ("headers", $headers, 895);
+                                                                                $TLE201 = 'Subject: '; // 946
+                                                                                __log__ ("TLE201", $TLE201, 896);
+                                                                                $TSNNt313 = $this->subject; // 947
+                                                                                __log__ ("TSNNt313", $TSNNt313, 897);
+                                                                                $TLE202 = $TLE201 . $TSNNt313; // 948
+                                                                                __log__ ("TLE202", $TLE202, 898);
+                                                                                $TLE203 = mimemail::LINE_BREAK_SEQUENCE; // 949
+                                                                                __log__ ("TLE203", $TLE203, 899);
+                                                                                $TLE204 = $TLE202 . $TLE203; // 950
+                                                                                __log__ ("TLE204", $TLE204, 900);
+                                                                                $headers = $headers . $TLE204; // 951
+                                                                                __log__ ("headers", $headers, 901);
+                                                                                $TSNNt314 = $this->rootMimeEntity; // 952
+                                                                                __log__ ("TSNNt314", $TSNNt314, 902);
+                                                                                $TLE205 = $TSNNt314->build ();// /* , Call: 955, Return: 956, Exception Return: 957, After: 953, Exception After: 954 */ method call
+                                                                                __log__ ("TLE205", $TLE205, 903);
+                                                                                $headers = $headers . $TLE205; // 958
+                                                                                __log__ ("headers", $headers, 908);
+                                                                                return $headers; // 959
+                                                                            }
+}
+interface mailtransport {
+    public function open ()/* Entry: 960, Exit: 961, Exception Exit: 962 */ 
+                                                                           ;
+    public function send ($mailable)/* Entry: 963, Exit: 964, Exception Exit: 965 */ 
+                                                                                    ;
+    public function close ()/* Entry: 966, Exit: 967, Exception Exit: 968 */ 
+                                                                            ;
+}
+class nativemailtransport implements mailtransport { // "969"
+    public function open ()/* Entry: 970, Exit: 971, Exception Exit: 972 */ 
+                                                                           {
+                                                                                // "973 skip"
+                                                                           }
+    public function send ($mailable)/* Entry: 974, Exit: 975, Exception Exit: 976 */ 
+                                                                                    {
+                                                                                        $headers = $mailable->build ();// /* , Call: 979, Return: 980, Exception Return: 981, After: 977, Exception After: 978 */ method call
+                                                                                        __log__ ("headers", $headers, 927);
+                                                                                        unset ($TSa206); // 982
+                                                                                        $TSa206 = (array) $TSa206; // 983
+                                                                                        __log__ ("TSa206", $TSa206, 933);
+                                                                                        $toAddresses = $TSa206; // 984
+                                                                                        __log__ ("toAddresses", $toAddresses, 934);
+                                                                                        $i = 0; // 985
+                                                                                        __log__ ("i", $i, 935);
+                                                                                        $ElcfPF8 = true; // 986
+                                                                                        __log__ ("ElcfPF8", $ElcfPF8, 936);
+                                                                                        while (True){
+                                                                                            if ($ElcfPF8){
+                                                                                                $ElcfPF8 = false; // 989
+                                                                                                __log__ ("ElcfPF8", $ElcfPF8, 939);
+                                                                                            }
+                                                                                            else {
+                                                                                                ++$i; // 990
+                                                                                                __log__ ("i", $i, 940);
+                                                                                            }
+                                                                                            $TLE207 = $mailable->gettoaddresses ();// /* , Call: 993, Return: 994, Exception Return: 995, After: 991, Exception After: 992 */ method call
+                                                                                            __log__ ("TLE207", $TLE207, 941);
+                                                                                            $TLE208 = $TLE207->length ();// /* , Call: 998, Return: 999, Exception Return: 1000, After: 996, Exception After: 997 */ method call
+                                                                                            __log__ ("TLE208", $TLE208, 946);
+                                                                                            $TLE209 = $i < $TLE208; // 1001
+                                                                                            __log__ ("TLE209", $TLE209, 951);
+                                                                                            if ($TLE209){
+                                                                                                 // "1003 skip"
+                                                                                            }
+                                                                                            else {
+                                                                                                break; // 1004
+                                                                                            }
+                                                                                            $TLE210 = sizeof ($toAddresses); // "1005native call"
+                                                                                            __log__ ("TLE210", $TLE210, 955);
+                                                                                            $TLE211 = $mailable->gettoaddresses ();// /* , Call: 1008, Return: 1009, Exception Return: 1010, After: 1006, Exception After: 1007 */ method call
+                                                                                            __log__ ("TLE211", $TLE211, 956);
+                                                                                            $TLE212 = $TLE211->get ($i);// /* , Call: 1013, Return: 1014, Exception Return: 1015, After: 1011, Exception After: 1012 */ method call
+                                                                                            __log__ ("TLE212", $TLE212, 961);
+                                                                                            $toAddresses[$TLE210] = $TLE212; // 1016
+                                                                                        }
+                                                                                        $TLE213 = ', '; // 1017
+                                                                                        __log__ ("TLE213", $TLE213, 967);
+                                                                                        $TLE214 = implode ($TLE213, $toAddresses); // "1018native call"
+                                                                                        __log__ ("TLE214", $TLE214, 968);
+                                                                                        $TLE215 = $mailable->getsubject ();// /* , Call: 1021, Return: 1022, Exception Return: 1023, After: 1019, Exception After: 1020 */ method call
+                                                                                        __log__ ("TLE215", $TLE215, 969);
+                                                                                        $TLE216 = ''; // 1024
+                                                                                        __log__ ("TLE216", $TLE216, 974);
+                                                                                        $TLE217 = ''; // 1025
+                                                                                        __log__ ("TLE217", $TLE217, 975);
+                                                                                        $TLE218 = mail ($TLE214, $TLE215, $TLE216, $headers, $TLE217); // "1026native call"
+                                                                                        __log__ ("TLE218", $TLE218, 976);
+                                                                                        $TLE219 = !$TLE218; // 1027
+                                                                                        __log__ ("TLE219", $TLE219, 977);
+                                                                                        if ($TLE219){
+                                                                                            $TLE220 = 'Failed to send email'; // 1029
+                                                                                            __log__ ("TLE220", $TLE220, 979);
+                                                                                            $TLE221 = new mailexception ($TLE220);// /* , Call: 1032, Return: 1033, Exception Return: 1034, After: 1030, Exception After: 1031 */ constructor call
+                                                                                            __log__ ("TLE221", $TLE221, 980);
+                                                                                            throw $TLE221; // 1035
+                                                                                        }
+                                                                                        else {
+                                                                                             // "1036 skip"
+                                                                                        }
+                                                                                    }
+    public function close ()/* Entry: 1037, Exit: 1038, Exception Exit: 1039 */ 
+                                                                               {
+                                                                                    // "1040 skip"
+                                                                               }
+}
+$root = new mixedmimeentity ();// /* , Call: 1043, Return: 1044, Exception Return: 1045, After: 1041, Exception After: 1042 */ constructor call
+__log__ ("root", $root, 991);
+$TLE222 = 'test.jpg'; // 1046
+__log__ ("TLE222", $TLE222, 996);
+$TLE223 = file_get_contents ($TLE222); // "1047native call"
+__log__ ("TLE223", $TLE223, 997);
+$TLE224 = 'image/jpg'; // 1048
+__log__ ("TLE224", $TLE224, 998);
+$TLE225 = base64encoding::getinstance ();// /* , Call: 1051, Return: 1052, Exception Return: 1053, After: 1049, Exception After: 1050 */ static method call
+__log__ ("TLE225", $TLE225, 999);
+$TLE226 = 'attachment'; // 1054
+__log__ ("TLE226", $TLE226, 1004);
+$TLE227 = null; // 1055
+__log__ ("TLE227", $TLE227, 1005);
+$TLE228 = new mimeentity ($TLE223, $TLE224, $TLE225, $TLE226, $TLE227);// /* , Call: 1058, Return: 1059, Exception Return: 1060, After: 1056, Exception After: 1057 */ constructor call
+__log__ ("TLE228", $TLE228, 1006);
+$root->add ($TLE228);// /* , Call: 1063, Return: 1064, Exception Return: 1065, After: 1061, Exception After: 1062 */ method call
+$TLE229 = 'Content'; // 1066
+__log__ ("TLE229", $TLE229, 1016);
+$TLE230 = 'text/plain; charset=utf-8'; // 1067
+__log__ ("TLE230", $TLE230, 1017);
+$TLE231 = base64encoding::getinstance ();// /* , Call: 1070, Return: 1071, Exception Return: 1072, After: 1068, Exception After: 1069 */ static method call
+__log__ ("TLE231", $TLE231, 1018);
+$TLE232 = null; // 1073
+__log__ ("TLE232", $TLE232, 1023);
+$TLE233 = null; // 1074
+__log__ ("TLE233", $TLE233, 1024);
+$TLE234 = new mimeentity ($TLE229, $TLE230, $TLE231, $TLE232, $TLE233);// /* , Call: 1077, Return: 1078, Exception Return: 1079, After: 1075, Exception After: 1076 */ constructor call
+__log__ ("TLE234", $TLE234, 1025);
+$root->add ($TLE234);// /* , Call: 1082, Return: 1083, Exception Return: 1084, After: 1080, Exception After: 1081 */ method call
+$TLE235 = 'mail@henkerikvanderhoek.nl'; // 1085
+__log__ ("TLE235", $TLE235, 1035);
+$TLE236 = 'Subject'; // 1086
+__log__ ("TLE236", $TLE236, 1036);
+$mail = new mimemail ($TLE235, $TLE236);// /* , Call: 1089, Return: 1090, Exception Return: 1091, After: 1087, Exception After: 1088 */ constructor call
+__log__ ("mail", $mail, 1037);
+$TLE237 = 'mail@henkerikvanderhoek.nl'; // 1092
+__log__ ("TLE237", $TLE237, 1042);
+$mail->addtoaddress ($TLE237);// /* , Call: 1095, Return: 1096, Exception Return: 1097, After: 1093, Exception After: 1094 */ method call
+$mail->setrootmimeentity ($root);// /* , Call: 1100, Return: 1101, Exception Return: 1102, After: 1098, Exception After: 1099 */ method call
+try {
+    $transport = new nativemailtransport ();// /* , Call: 1105, Return: 1106, Exception Return: 1107, After: 1103, Exception After: 1104 */ constructor call
+    __log__ ("transport", $transport, 1053);
+    $transport->open ();// /* , Call: 1110, Return: 1111, Exception Return: 1112, After: 1108, Exception After: 1109 */ method call
+    $transport->send ($mail);// /* , Call: 1115, Return: 1116, Exception Return: 1117, After: 1113, Exception After: 1114 */ method call
+    $transport->close ();// /* , Call: 1120, Return: 1121, Exception Return: 1122, After: 1118, Exception After: 1119 */ method call
+}
+catch (mailexception $e) {
+     // "1124 skip"
+}
+/*
+Native classes and their program labels
+class directoryiterator (1126 )
+class domdocument (1129 )
+    load 1131 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean]}}})
+class domelement (1134 )
+class domnode (1137 )
+class domnodelist (1140 )
+    item 1142 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeObject "domnode"]}})
+class exception (1145 )
+    getmessage 1147 (TValue {value = fromList [NativeString]})
+    getprevious 1149 (TValue {value = fromList [NativeObject "exception"]})
+    getcode 1151 (TValue {value = fromList [NativeString,NativeInteger]})
+    getfile 1153 (TValue {value = fromList [NativeString]})
+    getline 1155 (TValue {value = fromList [NativeInteger]})
+    gettraceasstring 1157 (TValue {value = fromList [NativeString]})
+    __tostring 1159 (TValue {value = fromList [NativeString]})
+    __clone 1161 (TValue {value = fromList [NativeNull]})
+class filesystemiterator (1164 )
+class invalidargumentexception (1167 )
+class logicexception (1170 )
+class outofboundsexception (1173 )
+class recursivedirectoryiterator (1176 )
+class recursiveiteratoriterator (1179 )
+class reflectionclass (1182 )
+    getname 1184 (TValue {value = fromList [NativeString]})
+class runtimeexception (1187 )
+class simplexmlelement (1190 )
+    asxml 1192 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeString,NativeBoolean]}})
+    attributes 1194 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeBoolean]}, right = TValue {value = fromList [NativeObject "simplexmlelement"]}}})
+class splfileinfo (1197 )
+    getatime 1199 (TValue {value = fromList [NativeInteger]})
+    getbasename 1201 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeString]}})
+    getctime 1203 (TValue {value = fromList [NativeInteger]})
+    getextension 1205 (TValue {value = fromList [NativeString]})
+    getfileinfo 1207 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeObject "splfileinfo"]}})
+    getfilename 1209 (TValue {value = fromList [NativeString]})
+    getgroup 1211 (TValue {value = fromList [NativeInteger]})
+    getinode 1213 (TValue {value = fromList [NativeInteger]})
+    getlinktarget 1215 (TValue {value = fromList [NativeString]})
+    getmtime 1217 (TValue {value = fromList [NativeInteger]})
+    getowner 1219 (TValue {value = fromList [NativeInteger]})
+    getpath 1221 (TValue {value = fromList [NativeString]})
+    getpathinfo 1223 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeObject "splfileinfo"]}})
+    getpathname 1225 (TValue {value = fromList [NativeString]})
+    getperms 1227 (TValue {value = fromList [NativeInteger]})
+    getrealpath 1229 (TValue {value = fromList [NativeString]})
+    getsize 1231 (TValue {value = fromList [NativeInteger]})
+    gettype 1233 (TValue {value = fromList [NativeString]})
+    isdir 1235 (TValue {value = fromList [NativeBoolean]})
+    isexecutable 1237 (TValue {value = fromList [NativeBoolean]})
+    isfile 1239 (TValue {value = fromList [NativeBoolean]})
+    islink 1241 (TValue {value = fromList [NativeBoolean]})
+    isreadable 1243 (TValue {value = fromList [NativeBoolean]})
+    iswritable 1245 (TValue {value = fromList [NativeBoolean]})
+    openFile 1247 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeBoolean]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeResource File]}, right = TValue {value = fromList [NativeObject "splfileobject"]}}}})
+    setfileclass 1249 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeNull]}})
+    setinfoclass 1251 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeNull]}})
+    __toString 1253 (TValue {value = fromList [NativeString]})
+class ziparchive (1256 )
+    addemptydir 1258 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+    addfile 1260 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean]}}}}})
+    addfromstring 1262 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    addglob 1264 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeArray (fromList [NativeString]) (fromList [NativeString,NativeBoolean])]}, right = TValue {value = fromList [NativeBoolean]}}}})
+    addpattern 1266 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeArray (fromList [NativeString]) (fromList [NativeString,NativeBoolean])]}, right = TValue {value = fromList [NativeBoolean]}}}})
+    close 1268 (TValue {value = fromList [NativeBoolean]})
+    deleteindex 1270 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean]}})
+    deletename 1272 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+    extractto 1274 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeString,NativeArray (fromList [NativeInteger]) (fromList [NativeString])]}, right = TValue {value = fromList [NativeBoolean]}}})
+    getarchivecomment 1276 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}})
+    getcommentindex 1278 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}})
+    getcommentname 1280 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}})
+    getfromindex 1282 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}}})
+    getfromname 1284 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}}})
+    getnameindex 1286 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}})
+    getstatusstring 1288 (TValue {value = fromList [NativeString]})
+    getstream 1290 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeResource File]}})
+    locatename 1292 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeInteger]}}})
+    open 1294 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean,NativeInteger]}}})
+    renameindex 1296 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    renamename 1298 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    setarchivecomment 1300 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+    setcommentindex 1302 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    setcommentname 1304 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    statindex 1306 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeArray (fromList [NativeString]) (fromList [NativeString,NativeInteger])]}}})
+    statname 1308 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeFalse,NativeArray (fromList [NativeString]) (fromList [NativeString,NativeInteger])]}}})
+    unchangeall 1310 (TValue {value = fromList [NativeBoolean]})
+    unchangearchive 1312 (TValue {value = fromList [NativeBoolean]})
+    unchangeindex 1314 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean]}})
+    unchangename 1316 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+*/
+?>

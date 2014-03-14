@@ -1,0 +1,29 @@
+module Analysis.Lattice.AbstractUndefined where
+    
+import Data.Set as S    
+import Control.DeepSeq        
+import Framework.Lattice
+import CCO.Printing as P
+import Analysis.Type
+
+data AbstractUndefined = Bottom | Top deriving (Show, Eq, Ord)
+
+instance Lattice AbstractUndefined where
+    bottom = Bottom
+    
+    join Top    Top    = Top
+    join Top    Bottom = Top
+    join Bottom Top    = Top
+    join Bottom Bottom = Bottom
+    
+instance Printable AbstractUndefined where 
+    pp Bottom = P.empty
+    pp Top    = text "⊤"
+
+instance NFData AbstractUndefined where
+    rnf Top    = ()
+    rnf Bottom = ()
+    
+instance TypeSet AbstractUndefined where
+    typeSet g Top    = S.singleton Undefined
+    typeSet g Bottom = S.empty

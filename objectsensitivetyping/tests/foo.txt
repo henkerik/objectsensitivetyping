@@ -1,0 +1,815 @@
+<?php
+ // "1 skip"
+interface AbstractList {
+}
+class ArrayList implements AbstractList {
+    protected $list;
+    public function __construct () 
+                                  {
+                                      unset ($TSa20); // 19
+                                      $this->list = $TSa20; // 20
+                                  }
+    public function add ($item) 
+                               {
+                                   $TLE21 = $this->length ();// , Call: 24, Return: 25, After: 23 method call
+                                   $TSt22 =& $this->list; // 26
+                                   $TSt22[$TLE21] = $item; // 27
+                               }
+    public function get ($index) 
+                                {
+                                    $TSt23 = $this->list; // 30
+                                    $TSi24 = $TSt23[$index]; // 31
+                                    return $TSi24; // 32
+                                }
+    public function addList ($list) 
+                                   {
+                                       $i = 0.0; // 35
+                                       $ElcfPF0 = true; // 36
+                                       while (True){
+                                           if ($ElcfPF0){
+                                               $ElcfPF0 = false; // 39
+                                           }
+                                           else {
+                                               ++$i; // 40
+                                           }
+                                           $TLE25 = $list->length ();// , Call: 42, Return: 43, After: 41 method call
+                                           $TLE26 = $i < $TLE25; // 44
+                                           if ($TLE26){
+                                                // "46 skip"
+                                           }
+                                           else {
+                                               break; // 47
+                                           }
+                                           $TLE27 = $list->get ($i);// , Call: 49, Return: 50, After: 48 method call
+                                           $this->add ($TLE27);// , Call: 52, Return: 53, After: 51 method call
+                                       }
+                                   }
+    public function contains ($item) 
+                                    {
+                                        $i = 0.0; // 56
+                                        $ElcfPF1 = true; // 57
+                                        while (True){
+                                            if ($ElcfPF1){
+                                                $ElcfPF1 = false; // 60
+                                            }
+                                            else {
+                                                ++$i; // 61
+                                            }
+                                            $TLE28 = $list->length ();// , Call: 63, Return: 64, After: 62 method call
+                                            $TLE29 = $i < $TLE28; // 65
+                                            if ($TLE29){
+                                                 // "67 skip"
+                                            }
+                                            else {
+                                                break; // 68
+                                            }
+                                            $TLE30 = $list->get ($i);// , Call: 70, Return: 71, After: 69 method call
+                                            $TLE31 = $item === $TLE30; // 72
+                                            if ($TLE31){
+                                                $TLE32 = true; // 74
+                                                return $TLE32; // 75
+                                            }
+                                            else {
+                                                 // "76 skip"
+                                            }
+                                        }
+                                        $TLE33 = false; // 77
+                                        return $TLE33; // 78
+                                    }
+    public function remove ($remove) 
+                                    {
+                                        unset ($TSa34); // 81
+                                        $new = $TSa34; // 82
+                                        $i = 0.0; // 83
+                                        $ElcfPF2 = true; // 84
+                                        while (True){
+                                            if ($ElcfPF2){
+                                                $ElcfPF2 = false; // 87
+                                            }
+                                            else {
+                                                ++$i; // 88
+                                            }
+                                            $TLE35 = $this->length ();// , Call: 90, Return: 91, After: 89 method call
+                                            $TLE36 = $i < $TLE35; // 92
+                                            if ($TLE36){
+                                                 // "94 skip"
+                                            }
+                                            else {
+                                                break; // 95
+                                            }
+                                            $TLE37 = $this->get ($i);// , Call: 97, Return: 98, After: 96 method call
+                                            $TLE38 = $remove != $TLE37; // 99
+                                            if ($TLE38){
+                                                $TLE39 = sizeof ($new); // "101native call"
+                                                $TLE40 = $this->get ($i);// , Call: 103, Return: 104, After: 102 method call
+                                                $new[$TLE39] = $TLE40; // 105
+                                            }
+                                            else {
+                                                 // "106 skip"
+                                            }
+                                        }
+                                        $this->list = $new; // 107
+                                    }
+    public function isEmpty () 
+                              {
+                                  $TMIt270 = $this->list; // 110
+                                  $TLE41 = sizeof ($TMIt270); // "111native call"
+                                  $TLE42 = null; // 112
+                                  $TLE43 = $TLE41 == $TLE42; // 113
+                                  return $TLE43; // 114
+                              }
+    public function join ($separator) 
+                                     {
+                                         $TMIt271 = $this->list; // 117
+                                         $TLE44 = join ($separator, $TMIt271); // "118native call"
+                                         return $TLE44; // 119
+                                     }
+    public function index ($item) 
+                                 {
+                                     $i = 0.0; // 122
+                                     $ElcfPF3 = true; // 123
+                                     while (True){
+                                         if ($ElcfPF3){
+                                             $ElcfPF3 = false; // 126
+                                         }
+                                         else {
+                                             ++$i; // 127
+                                         }
+                                         $TLE45 = $this->length ();// , Call: 129, Return: 130, After: 128 method call
+                                         $TLE46 = $i < $TLE45; // 131
+                                         if ($TLE46){
+                                              // "133 skip"
+                                         }
+                                         else {
+                                             break; // 134
+                                         }
+                                         $TSt47 = $this->list; // 135
+                                         $TSi48 = $TSt47[$i]; // 136
+                                         $TLE49 = $TSi48 === $item; // 137
+                                         if ($TLE49){
+                                             return $i; // 139
+                                         }
+                                         else {
+                                              // "140 skip"
+                                         }
+                                     }
+                                 }
+    public function length () 
+                             {
+                                 $TMIt272 = $this->list; // 143
+                                 $TLE50 = sizeof ($TMIt272); // "144native call"
+                                 return $TLE50; // 145
+                             }
+}
+interface Mailable {
+}
+class MailException extends Exception {
+}
+interface Encoding {
+}
+class Base64Encoding implements Encoding {
+    protected function __construct () 
+                                     {
+                                          // "160 skip"
+                                     }
+    protected static $instance;
+    public static function getInstance () 
+                                         {
+                                             $TSt51 = Base64Encoding::$instance; // 163
+                                             $TLE52 = null; // 164
+                                             $TLE53 = $TSt51 == $TLE52; // 165
+                                             if ($TLE53){
+                                                 $TLE54 = new Base64Encoding ();// , Call: 168, Return: 169, After: 167 constructor call
+                                                 Base64Encoding::$instance = $TLE54; // 170
+                                             }
+                                             else {
+                                                  // "171 skip"
+                                             }
+                                             $TSt55 = Base64Encoding::$instance; // 172
+                                             return $TSt55; // 173
+                                         }
+    public function getType () 
+                              {
+                                  $TLE56 = 'base64'; // 176
+                                  return $TLE56; // 177
+                              }
+    public function encode ($content) 
+                                     {
+                                         $TLE57 = base64_encode ($content);// , Call: 181, Return: 182, After: 180 function call
+                                         $TLE58 = 76.0; // 183
+                                         $TLE59 = MimeMail::LINE_BREAK_SEQUENCE; // 184
+                                         $TLE60 = chunk_split ($TLE57, $TLE58, $TLE59); // "185native call"
+                                         $TLE61 = rtrim ($TLE60); // "186native call"
+                                         return $TLE61; // 187
+                                     }
+}
+class SevenBitEncoding implements Encoding {
+    protected function __construct () 
+                                     {
+                                          // "191 skip"
+                                     }
+    protected static $instance;
+    public static function getInstance () 
+                                         {
+                                             $TSt62 = SevenBitEncoding::$instance; // 194
+                                             $TLE63 = null; // 195
+                                             $TLE64 = $TSt62 == $TLE63; // 196
+                                             if ($TLE64){
+                                                 $TLE65 = new SevenBitEncoding ();// , Call: 199, Return: 200, After: 198 constructor call
+                                                 SevenBitEncoding::$instance = $TLE65; // 201
+                                             }
+                                             else {
+                                                  // "202 skip"
+                                             }
+                                             $TSt66 = SevenBitEncoding::$instance; // 203
+                                             return $TSt66; // 204
+                                         }
+    public function getType () 
+                              {
+                                  $TLE67 = '7bit'; // 207
+                                  return $TLE67; // 208
+                              }
+    public function encode ($content) 
+                                     {
+                                         return $content; // 211
+                                     }
+}
+class MimeEntity {
+    protected $contentType;
+    protected $contentTransferEncoding;
+    protected $contentDisposition;
+    protected $contentID;
+    protected $content;
+    public function __construct ($content, $contentType, $contentTransferEncoding, $contentDisposition, $contentID) 
+                                                                                                                   {
+                                                                                                                       $this->content = $content; // 215
+                                                                                                                       $this->contentType = $contentType; // 216
+                                                                                                                       $this->contentTransferEncoding = $contentTransferEncoding; // 217
+                                                                                                                       $this->contentDisposition = $contentDisposition; // 218
+                                                                                                                       $this->contentID = $contentID; // 219
+                                                                                                                   }
+    public function build () 
+                            {
+                                $TMIt273 = $this->contentType; // 222
+                                $TLE68 = isset ($TMIt273);// , Call: 224, Return: 225, After: 223 function call
+                                if ($TLE68){
+                                    $TLE69 = 'Content-Type: '; // 227
+                                    $TSt70 = $this->contentType; // 228
+                                    $TLE71 = $TLE69 . $TSt70; // 229
+                                    $TLE72 = MimeMail::LINE_BREAK_SEQUENCE; // 230
+                                    $TEF9 = $TLE71 . $TLE72; // 231
+                                }
+                                else {
+                                    $TEF9 = ''; // 232
+                                }
+                                $headers = $TEF9; // 233
+                                $TMIt274 = $this->contentTransferEncoding; // 234
+                                $TLE73 = isset ($TMIt274);// , Call: 236, Return: 237, After: 235 function call
+                                if ($TLE73){
+                                    $TLE74 = 'Content-Transfer-Encoding: '; // 239
+                                    $TSt75 = $this->contentTransferEncoding; // 240
+                                    $TLE76 = $TSt75->getType ();// , Call: 242, Return: 243, After: 241 method call
+                                    $TLE77 = $TLE74 . $TLE76; // 244
+                                    $TLE78 = MimeMail::LINE_BREAK_SEQUENCE; // 245
+                                    $TEF10 = $TLE77 . $TLE78; // 246
+                                }
+                                else {
+                                    $TEF10 = ''; // 247
+                                }
+                                $headers = $headers . $TEF10; // 248
+                                $TMIt275 = $this->contentDisposition; // 249
+                                $TLE79 = isset ($TMIt275);// , Call: 251, Return: 252, After: 250 function call
+                                if ($TLE79){
+                                    $TLE80 = 'Content-Disposition: '; // 254
+                                    $TSt81 = $this->contentDisposition; // 255
+                                    $TLE82 = $TLE80 . $TSt81; // 256
+                                    $TLE83 = MimeMail::LINE_BREAK_SEQUENCE; // 257
+                                    $TEF11 = $TLE82 . $TLE83; // 258
+                                }
+                                else {
+                                    $TEF11 = ''; // 259
+                                }
+                                $headers = $headers . $TEF11; // 260
+                                $TMIt276 = $this->contentID; // 261
+                                $TLE84 = isset ($TMIt276);// , Call: 263, Return: 264, After: 262 function call
+                                if ($TLE84){
+                                    $TLE85 = 'Content-ID: '; // 266
+                                    $TSt86 = $this->contentID; // 267
+                                    $TLE87 = $TLE85 . $TSt86; // 268
+                                    $TLE88 = MimeMail::LINE_BREAK_SEQUENCE; // 269
+                                    $TEF12 = $TLE87 . $TLE88; // 270
+                                }
+                                else {
+                                    $TEF12 = ''; // 271
+                                }
+                                $headers = $headers . $TEF12; // 272
+                                $TLE89 = MimeMail::LINE_BREAK_SEQUENCE; // 273
+                                $headers = $headers . $TLE89; // 274
+                                $TSt90 = $this->contentTransferEncoding; // 275
+                                $TMIt277 = $this->content; // 276
+                                $TLE91 = $TSt90->encode ($TMIt277);// , Call: 278, Return: 279, After: 277 method call
+                                $headers = $headers . $TLE91; // 280
+                                $TLE92 = MimeMail::LINE_BREAK_SEQUENCE; // 281
+                                $TLE93 = MimeMail::LINE_BREAK_SEQUENCE; // 282
+                                $TLE94 = $TLE92 . $TLE93; // 283
+                                $headers = $headers . $TLE94; // 284
+                                return $headers; // 285
+                            }
+}
+class CompositeMimeEntity extends MimeEntity {
+    protected $children;
+    protected $boundary;
+    public function __construct () 
+                                  {
+                                      $TLE95 = 'This part of the E-mail should never be seen. If you are reading this, consider upgrading your e-mail client to a MIME-compatible client.'; // 289
+                                      $this->content = $TLE95; // 290
+                                      $TLE96 = new ArrayList ();// , Call: 292, Return: 293, After: 291 constructor call
+                                      $this->children = $TLE96; // 294
+                                      $TLE97 = 'XX'; // 295
+                                      $TLE98 = 65.0; // 296
+                                      $TLE99 = 90.0; // 297
+                                      $TLE100 = rand ($TLE98, $TLE99); // "298native call"
+                                      $TLE101 = chr ($TLE100); // "299native call"
+                                      $TLE102 = $TLE97 . $TLE101; // 300
+                                      $TLE103 = '------'; // 301
+                                      $TLE104 = $TLE102 . $TLE103; // 302
+                                      $TLE105 = 0.0; // 303
+                                      $TLE106 = getrandmax (); // "304native call"
+                                      $TLE107 = rand ($TLE105, $TLE106); // "305native call"
+                                      $TLE108 = false; // 306
+                                      $TLE109 = uniqid ($TLE107, $TLE108); // "307native call"
+                                      $TLE110 = false; // 308
+                                      $TLE111 = md5 ($TLE109, $TLE110); // "309native call"
+                                      $TLE112 = $TLE104 . $TLE111; // 310
+                                      $this->boundary = $TLE112; // 311
+                                  }
+    public function add ($mimeEntity) 
+                                     {
+                                         $TSt113 = $this->children; // 314
+                                         $TSt113->add ($mimeEntity);// , Call: 316, Return: 317, After: 315 method call
+                                     }
+    public function getBoundary () 
+                                  {
+                                      $TSt114 = $this->boundary; // 320
+                                      return $TSt114; // 321
+                                  }
+    public function build () 
+                            {
+                                $headers = MimeEntity::build ();// , Call: 325, Return: 326, After: 324 resolved method call
+                                $i = 0.0; // 327
+                                $ElcfPF4 = true; // 328
+                                while (True){
+                                    if ($ElcfPF4){
+                                        $ElcfPF4 = false; // 331
+                                    }
+                                    else {
+                                        ++$i; // 332
+                                    }
+                                    $TSt115 = $this->children; // 333
+                                    $TLE116 = $TSt115->length ();// , Call: 335, Return: 336, After: 334 method call
+                                    $TLE117 = $i < $TLE116; // 337
+                                    if ($TLE117){
+                                         // "339 skip"
+                                    }
+                                    else {
+                                        break; // 340
+                                    }
+                                    $TLE118 = '--'; // 341
+                                    $TLE119 = $this->getBoundary ();// , Call: 343, Return: 344, After: 342 method call
+                                    $TLE120 = $TLE118 . $TLE119; // 345
+                                    $TLE121 = MimeMail::LINE_BREAK_SEQUENCE; // 346
+                                    $TLE122 = $TLE120 . $TLE121; // 347
+                                    $headers = $headers . $TLE122; // 348
+                                    $TSt123 = $this->children; // 349
+                                    $TLE124 = $TSt123->get ($i);// , Call: 351, Return: 352, After: 350 method call
+                                    $TLE125 = $TLE124->build ();// , Call: 354, Return: 355, After: 353 method call
+                                    $headers = $headers . $TLE125; // 356
+                                }
+                                $TLE126 = '--'; // 357
+                                $TLE127 = $this->getBoundary ();// , Call: 359, Return: 360, After: 358 method call
+                                $TLE128 = $TLE126 . $TLE127; // 361
+                                $TLE129 = '--'; // 362
+                                $TLE130 = $TLE128 . $TLE129; // 363
+                                $TLE131 = MimeMail::LINE_BREAK_SEQUENCE; // 364
+                                $TLE132 = $TLE130 . $TLE131; // 365
+                                $headers = $headers . $TLE132; // 366
+                                return $headers; // 367
+                            }
+}
+class AlternativeMimeEntity extends CompositeMimeEntity {
+    public function __construct () 
+                                  {
+                                      CompositeMimeEntity::__construct ();// , Call: 372, Return: 373, After: 371 resolved method call
+                                      $TLE133 = 'multipart/alternative; boundary=%s'; // 374
+                                      $TLE134 = $this->getBoundary ();// , Call: 376, Return: 377, After: 375 method call
+                                      $TLE135 = sprintf ($TLE133, $TLE134); // "378native call"
+                                      $this->contentType = $TLE135; // 379
+                                      $TLE136 = SevenBitEncoding::getInstance ();// , Call: 381, Return: 382, After: 380 static method call
+                                      $this->contentTransferEncoding = $TLE136; // 383
+                                  }
+}
+class MixedMimeEntity extends CompositeMimeEntity {
+    public function __construct () 
+                                  {
+                                      CompositeMimeEntity::__construct ();// , Call: 388, Return: 389, After: 387 resolved method call
+                                      $TLE137 = 'multipart/mixed; boundary=%s'; // 390
+                                      $TLE138 = $this->getBoundary ();// , Call: 392, Return: 393, After: 391 method call
+                                      $TLE139 = sprintf ($TLE137, $TLE138); // "394native call"
+                                      $this->contentType = $TLE139; // 395
+                                      $TLE140 = SevenBitEncoding::getInstance ();// , Call: 397, Return: 398, After: 396 static method call
+                                      $this->contentTransferEncoding = $TLE140; // 399
+                                  }
+}
+class RelatedMimeEntity extends CompositeMimeEntity {
+    public function __construct () 
+                                  {
+                                      CompositeMimeEntity::__construct ();// , Call: 404, Return: 405, After: 403 resolved method call
+                                      $TLE141 = 'multipart/related; boundary=%s'; // 406
+                                      $TLE142 = $this->getBoundary ();// , Call: 408, Return: 409, After: 407 method call
+                                      $TLE143 = sprintf ($TLE141, $TLE142); // "410native call"
+                                      $this->contentType = $TLE143; // 411
+                                      $TLE144 = SevenBitEncoding::getInstance ();// , Call: 413, Return: 414, After: 412 static method call
+                                      $this->contentTransferEncoding = $TLE144; // 415
+                                  }
+}
+class MimeMail implements Mailable {
+    const LINE_BREAK_SEQUENCE = '\n';
+    protected $rootMimeEntity = null;
+    protected $subject;
+    protected $fromAddress;
+    protected $version = '1.0';
+    protected $toAddresses;
+    protected $ccAddresses;
+    protected $bccAddresses;
+    public function __construct ($fromAddress, $subject) 
+                                                        {
+                                                            $this->fromAddress = $fromAddress; // 419
+                                                            $this->subject = $subject; // 420
+                                                            $TLE145 = new ArrayList ();// , Call: 422, Return: 423, After: 421 constructor call
+                                                            $this->toAddresses = $TLE145; // 424
+                                                            $TLE146 = new ArrayList ();// , Call: 426, Return: 427, After: 425 constructor call
+                                                            $this->ccAddresses = $TLE146; // 428
+                                                            $TLE147 = new ArrayList ();// , Call: 430, Return: 431, After: 429 constructor call
+                                                            $this->bccAddresses = $TLE147; // 432
+                                                        }
+    public function getVersion () 
+                                 {
+                                     $TSt148 = $this->version; // 435
+                                     return $TSt148; // 436
+                                 }
+    protected function getDate () 
+                                 {
+                                     $TLE149 = 'r'; // 439
+                                     $TLE150 = time ();// , Call: 441, Return: 442, After: 440 function call
+                                     $TLE151 = date ($TLE149, $TLE150);// , Call: 444, Return: 445, After: 443 function call
+                                     return $TLE151; // 446
+                                 }
+    public function hasFromAddress () 
+                                     {
+                                         $TSt152 = $this->fromAddress; // 449
+                                         if ($TSt152){
+                                             $TEF13 = true; // 451
+                                         }
+                                         else {
+                                             $TEF13 = false; // 452
+                                         }
+                                         return $TEF13; // 453
+                                     }
+    public function setFromAddress ($fromAddress) 
+                                                 {
+                                                     $this->fromAddress = $fromAddress; // 456
+                                                 }
+    public function setSubject ($subject) 
+                                         {
+                                             $this->subject = $subject; // 459
+                                         }
+    public function hasSubject () 
+                                 {
+                                     $TSt153 = $this->subject; // 462
+                                     if ($TSt153){
+                                         $TEF14 = true; // 464
+                                     }
+                                     else {
+                                         $TEF14 = false; // 465
+                                     }
+                                     return $TEF14; // 466
+                                 }
+    public function getSubject () 
+                                 {
+                                     $TSt154 = $this->subject; // 469
+                                     return $TSt154; // 470
+                                 }
+    public function addToAddress ($address) 
+                                           {
+                                               $TSt155 = $this->toAddresses; // 473
+                                               $TSt155->add ($address);// , Call: 475, Return: 476, After: 474 method call
+                                           }
+    public function removeToAddresses () 
+                                        {
+                                            $TLE156 = new ArrayList ();// , Call: 480, Return: 481, After: 479 constructor call
+                                            $this->toAddresses = $TLE156; // 482
+                                        }
+    public function getToAddresses () 
+                                     {
+                                         $TSt157 = $this->toAddresses; // 485
+                                         return $TSt157; // 486
+                                     }
+    public function addCcAddress ($address) 
+                                           {
+                                               $TSt158 = $this->ccAddresses; // 489
+                                               $TSt158->add ($address);// , Call: 491, Return: 492, After: 490 method call
+                                           }
+    public function addBccAddress ($address) 
+                                            {
+                                                $TSt159 = $this->bccAddresses; // 495
+                                                $TSt159->add ($address);// , Call: 497, Return: 498, After: 496 method call
+                                            }
+    public function setRootMimeEntity ($rootMimeEntity) 
+                                                       {
+                                                           $this->rootMimeEntity = $rootMimeEntity; // 501
+                                                       }
+    public function hasRootMimeEntity () 
+                                        {
+                                            $TSt160 = $this->rootMimeEntity; // 504
+                                            if ($TSt160){
+                                                $TEF15 = true; // 506
+                                            }
+                                            else {
+                                                $TEF15 = false; // 507
+                                            }
+                                            return $TEF15; // 508
+                                        }
+    public function build () 
+                            {
+                                $TLE161 = $this->hasFromAddress ();// , Call: 512, Return: 513, After: 511 method call
+                                $TLE162 = !$TLE161; // 514
+                                if ($TLE162){
+                                    $TLE163 = 'The from address doesn\'t exists.'; // 516
+                                    $TLE164 = new MailException ($TLE163);// , Call: 518, Return: 519, After: 517 constructor call
+                                    throw $TLE164; // 520
+                                }
+                                else {
+                                     // "521 skip"
+                                }
+                                $TLE165 = $this->hasSubject ();// , Call: 523, Return: 524, After: 522 method call
+                                $TLE166 = !$TLE165; // 525
+                                if ($TLE166){
+                                    $TLE167 = 'The subject doesn\'t exists.'; // 527
+                                    $TLE168 = new MailException ($TLE167);// , Call: 529, Return: 530, After: 528 constructor call
+                                    throw $TLE168; // 531
+                                }
+                                else {
+                                     // "532 skip"
+                                }
+                                $TSt169 = $this->toAddresses; // 533
+                                $TLE16 = $TSt169->isEmpty ();// , Call: 535, Return: 536, After: 534 method call
+                                if ($TLE16){
+                                    $TSt170 = $this->ccAddresses; // 538
+                                    $TEF17 = $TSt170->isEmpty ();// , Call: 540, Return: 541, After: 539 method call
+                                }
+                                else {
+                                    $TEF17 = $TLE16; // 542
+                                }
+                                if ($TLE18){
+                                    $TSt171 = $this->bccAddresses; // 544
+                                    $TEF19 = $TSt171->isEmpty ();// , Call: 546, Return: 547, After: 545 method call
+                                }
+                                else {
+                                    $TEF19 = $TLE18; // 548
+                                }
+                                if ($TLE172){
+                                    $TLE173 = 'There is no valid to, cc or bcc address'; // 550
+                                    $TLE174 = new MailException ($TLE173);// , Call: 552, Return: 553, After: 551 constructor call
+                                    throw $TLE174; // 554
+                                }
+                                else {
+                                     // "555 skip"
+                                }
+                                $TLE175 = $this->hasRootMimeEntity ();// , Call: 557, Return: 558, After: 556 method call
+                                $TLE176 = !$TLE175; // 559
+                                if ($TLE176){
+                                    $TLE177 = 'The root mime entity doesn\'t exists.'; // 561
+                                    $TLE178 = new MailException ($TLE177);// , Call: 563, Return: 564, After: 562 constructor call
+                                    throw $TLE178; // 565
+                                }
+                                else {
+                                     // "566 skip"
+                                }
+                                $TLE179 = 'MIME-Version: '; // 567
+                                $TLE180 = $this->getVersion ();// , Call: 569, Return: 570, After: 568 method call
+                                $TLE181 = $TLE179 . $TLE180; // 571
+                                $TLE182 = MimeMail::LINE_BREAK_SEQUENCE; // 572
+                                $headers = $TLE181 . $TLE182; // 573
+                                $TLE183 = 'From: '; // 574
+                                $TSt184 = $this->fromAddress; // 575
+                                $TLE185 = $TLE183 . $TSt184; // 576
+                                $TLE186 = MimeMail::LINE_BREAK_SEQUENCE; // 577
+                                $TLE187 = $TLE185 . $TLE186; // 578
+                                $headers = $headers . $TLE187; // 579
+                                $TSt188 = $this->toAddresses; // 580
+                                $TLE189 = $TSt188->isEmpty ();// , Call: 582, Return: 583, After: 581 method call
+                                $TLE190 = !$TLE189; // 584
+                                if ($TLE190){
+                                    unset ($TSa191); // 586
+                                    $toAddresses = $TSa191; // 587
+                                    $i = 0.0; // 588
+                                    $ElcfPF5 = true; // 589
+                                    while (True){
+                                        if ($ElcfPF5){
+                                            $ElcfPF5 = false; // 592
+                                        }
+                                        else {
+                                            ++$i; // 593
+                                        }
+                                        $TSt192 = $this->toAddresses; // 594
+                                        $TLE193 = $TSt192->length ();// , Call: 596, Return: 597, After: 595 method call
+                                        $TLE194 = $i < $TLE193; // 598
+                                        if ($TLE194){
+                                             // "600 skip"
+                                        }
+                                        else {
+                                            break; // 601
+                                        }
+                                        $TLE195 = sizeof ($toAddresses); // "602native call"
+                                        $TSt196 = $this->toAddresses; // 603
+                                        $TLE197 = $TSt196->get ($i);// , Call: 605, Return: 606, After: 604 method call
+                                        $toAddresses[$TLE195] = $TLE197; // 607
+                                    }
+                                    $TLE198 = 'To: '; // 608
+                                    $TLE199 = ', '; // 609
+                                    $TLE200 = implode ($TLE199, $toAddresses); // "610native call"
+                                    $TLE201 = $TLE198 . $TLE200; // 611
+                                    $TLE202 = MimeMail::LINE_BREAK_SEQUENCE; // 612
+                                    $TLE203 = $TLE201 . $TLE202; // 613
+                                    $headers = $headers . $TLE203; // 614
+                                }
+                                else {
+                                     // "615 skip"
+                                }
+                                $TSt204 = $this->ccAddresses; // 616
+                                $TLE205 = $TSt204->isEmpty ();// , Call: 618, Return: 619, After: 617 method call
+                                $TLE206 = !$TLE205; // 620
+                                if ($TLE206){
+                                    unset ($TSa207); // 622
+                                    $ccAddresses = $TSa207; // 623
+                                    $i = 0.0; // 624
+                                    $ElcfPF6 = true; // 625
+                                    while (True){
+                                        if ($ElcfPF6){
+                                            $ElcfPF6 = false; // 628
+                                        }
+                                        else {
+                                            ++$i; // 629
+                                        }
+                                        $TSt208 = $this->ccAddresses; // 630
+                                        $TLE209 = $TSt208->length ();// , Call: 632, Return: 633, After: 631 method call
+                                        $TLE210 = $i < $TLE209; // 634
+                                        if ($TLE210){
+                                             // "636 skip"
+                                        }
+                                        else {
+                                            break; // 637
+                                        }
+                                        $TLE211 = sizeof ($ccAddresses); // "638native call"
+                                        $TSt212 = $this->ccAddresses; // 639
+                                        $TLE213 = $TSt212->get ($i);// , Call: 641, Return: 642, After: 640 method call
+                                        $ccAddresses[$TLE211] = $TLE213; // 643
+                                    }
+                                    $TLE214 = 'Cc: '; // 644
+                                    $TLE215 = ', '; // 645
+                                    $TLE216 = implode ($TLE215, $ccAddresses); // "646native call"
+                                    $TLE217 = $TLE214 . $TLE216; // 647
+                                    $TLE218 = MimeMail::LINE_BREAK_SEQUENCE; // 648
+                                    $TLE219 = $TLE217 . $TLE218; // 649
+                                    $headers = $headers . $TLE219; // 650
+                                }
+                                else {
+                                     // "651 skip"
+                                }
+                                $TSt220 = $this->bccAddresses; // 652
+                                $TLE221 = $TSt220->isEmpty ();// , Call: 654, Return: 655, After: 653 method call
+                                $TLE222 = !$TLE221; // 656
+                                if ($TLE222){
+                                    unset ($TSa223); // 658
+                                    $bccAddresses = $TSa223; // 659
+                                    $i = 0.0; // 660
+                                    $ElcfPF7 = true; // 661
+                                    while (True){
+                                        if ($ElcfPF7){
+                                            $ElcfPF7 = false; // 664
+                                        }
+                                        else {
+                                            ++$i; // 665
+                                        }
+                                        $TSt224 = $this->bccAddresses; // 666
+                                        $TLE225 = $TSt224->length ();// , Call: 668, Return: 669, After: 667 method call
+                                        $TLE226 = $i < $TLE225; // 670
+                                        if ($TLE226){
+                                             // "672 skip"
+                                        }
+                                        else {
+                                            break; // 673
+                                        }
+                                        $TLE227 = sizeof ($bccAddresses); // "674native call"
+                                        $TSt228 = $this->bccAddresses; // 675
+                                        $TLE229 = $TSt228->get ($i);// , Call: 677, Return: 678, After: 676 method call
+                                        $bccAddresses[$TLE227] = $TLE229; // 679
+                                    }
+                                    $TLE230 = 'Bcc:  '; // 680
+                                    $TLE231 = ', '; // 681
+                                    $TLE232 = implode ($TLE231, $bccAddresses); // "682native call"
+                                    $TLE233 = $TLE230 . $TLE232; // 683
+                                    $TLE234 = MimeMail::LINE_BREAK_SEQUENCE; // 684
+                                    $TLE235 = $TLE233 . $TLE234; // 685
+                                    $headers = $headers . $TLE235; // 686
+                                }
+                                else {
+                                     // "687 skip"
+                                }
+                                $TLE236 = 'Date: '; // 688
+                                $TLE237 = $this->getDate ();// , Call: 690, Return: 691, After: 689 method call
+                                $TLE238 = $TLE236 . $TLE237; // 692
+                                $TLE239 = MimeMail::LINE_BREAK_SEQUENCE; // 693
+                                $TLE240 = $TLE238 . $TLE239; // 694
+                                $headers = $headers . $TLE240; // 695
+                                $TLE241 = 'Subject: '; // 696
+                                $TSt242 = $this->subject; // 697
+                                $TLE243 = $TLE241 . $TSt242; // 698
+                                $TLE244 = MimeMail::LINE_BREAK_SEQUENCE; // 699
+                                $TLE245 = $TLE243 . $TLE244; // 700
+                                $headers = $headers . $TLE245; // 701
+                                $TSt246 = $this->rootMimeEntity; // 702
+                                $TLE247 = $TSt246->build ();// , Call: 704, Return: 705, After: 703 method call
+                                $headers = $headers . $TLE247; // 706
+                                return $headers; // 707
+                            }
+}
+interface MailTransport {
+}
+class NativeMailTransport implements MailTransport {
+    public function __construct () 
+                                  {
+                                       // "717 skip"
+                                  }
+    public function open () 
+                           {
+                                // "720 skip"
+                           }
+    public function send ($mailable) 
+                                    {
+                                        $headers = $mailable->build ();// , Call: 724, Return: 725, After: 723 method call
+                                        unset ($TSa248); // 726
+                                        $toAddresses = $TSa248; // 727
+                                        $i = 0.0; // 728
+                                        $ElcfPF8 = true; // 729
+                                        while (True){
+                                            if ($ElcfPF8){
+                                                $ElcfPF8 = false; // 732
+                                            }
+                                            else {
+                                                ++$i; // 733
+                                            }
+                                            $TLE249 = $mailable->getToAddresses ();// , Call: 735, Return: 736, After: 734 method call
+                                            $TLE250 = $TLE249->length ();// , Call: 738, Return: 739, After: 737 method call
+                                            if ($TLE250){
+                                                 // "741 skip"
+                                            }
+                                            else {
+                                                break; // 742
+                                            }
+                                            $TLE251 = sizeof ($toAddresses); // "743native call"
+                                            $TLE252 = $mailable->getToAddresses ();// , Call: 745, Return: 746, After: 744 method call
+                                            $TLE253 = $TLE252->get ($i);// , Call: 748, Return: 749, After: 747 method call
+                                            $toAddresses[$TLE251] = $TLE253; // 750
+                                        }
+                                        $TLE254 = ', '; // 751
+                                        $TLE255 = implode ($TLE254, $toAddresses); // "752native call"
+                                        $TLE256 = $mailable->getSubject ();// , Call: 754, Return: 755, After: 753 method call
+                                        $TLE257 = ''; // 756
+                                        $TLE258 = ''; // 757
+                                        $TLE259 = mail ($TLE255, $TLE256, $TLE257, $headers, $TLE258);// , Call: 759, Return: 760, After: 758 function call
+                                        $TLE260 = !$TLE259; // 761
+                                        if ($TLE260){
+                                            $TLE261 = 'Failed to send email'; // 763
+                                            $TLE262 = new MailException ($TLE261);// , Call: 765, Return: 766, After: 764 constructor call
+                                            throw $TLE262; // 767
+                                        }
+                                        else {
+                                             // "768 skip"
+                                        }
+                                    }
+    public function close () 
+                            {
+                                 // "771 skip"
+                            }
+}
+$root = new MixedMimeEntity ();// , Call: 773, Return: 774, After: 772 constructor call
+$TLE263 = 'test.jpg'; // 775
+$TLE264 = file_get_contents ($TLE263); // "776native call"
+$TLE265 = 'image/jpg'; // 777
+$TLE266 = Base64Encoding::getInstance ();// , Call: 779, Return: 780, After: 778 static method call
+$TLE267 = 'attachment'; // 781
+$TLE268 = null; // 782
+$TLE269 = new MimeEntity ($TLE264, $TLE265, $TLE266, $TLE267, $TLE268);// , Call: 784, Return: 785, After: 783 constructor call
+$root->add ($TLE269);// , Call: 787, Return: 788, After: 786 method call
+?>

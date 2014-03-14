@@ -1,0 +1,159 @@
+<?php
+function __log__ ($var, $value, $label)  // "ln: 5, lx: 6, lxe: 7"
+{
+    $type = gettype ($value);// , Call: 10, Return: 11, After: 8 function call
+    $cmp = "object"; // 13
+    $is_object = $type == $cmp; // 14
+    $open = "["; // 15
+    $close = "]"; // 16
+    if ($is_object){
+        $clazz = get_class ($value);// , Call: 20, Return: 21, After: 18 function call
+        $object = "object"; // 23
+        $type = $object . $open; // 24
+        $type = $type . $clazz; // 25
+        $type = $type . $close; // 26
+    }
+    else {
+         // "27 skip"
+    }
+    $cmp = "resource"; // 28
+    $is_resource = $type == $cmp; // 29
+    if ($is_resource){
+        $resourcetype = get_resource_type ($value);// , Call: 33, Return: 34, After: 31 function call
+        $resource = "resource"; // 36
+        $type = $resource . $open; // 37
+        $type = $type . $resourcetype; // 38
+        $type = $type . $close; // 39
+    }
+    else {
+         // "40 skip"
+    }
+    $file = "log.txt"; // 41
+    $newline = "\n"; // 42
+    $flags = FILE_APPEND; // 43
+    $colon = ":"; // 44
+    $line = $label . $colon; // 45
+    $line = $line . $var; // 46
+    $line = $line . $colon; // 47
+    $line = $line . $type; // 48
+    $line = $line . $newline; // 49
+    file_put_contents ($file, $line, $flags);// , Call: 52, Return: 53, After: 50 function call
+}
+ // "55 skip"
+function takes_array ($input)  // "ln: 56, lx: 57, lxe: 58"
+{
+    $TLE0 = 0; // 59
+    __log__ ("TLE0", $TLE0, 9);
+    $TLE1 = 1; // 60
+    __log__ ("TLE1", $TLE1, 10);
+    $TSNNi6 = $input[$TLE0]; // 61
+    __log__ ("TSNNi6", $TSNNi6, 11);
+    $TSNNi7 = $input[$TLE1]; // 62
+    __log__ ("TSNNi7", $TSNNi7, 12);
+    $res = $TSNNi6 + $TSNNi7; // 63
+    __log__ ("res", $res, 13);
+    return $res; // 64
+}
+$TLE2 = 0; // 65
+__log__ ("TLE2", $TLE2, 15);
+$TLE3 = 1; // 66
+__log__ ("TLE3", $TLE3, 16);
+$TLE4 = 2; // 67
+__log__ ("TLE4", $TLE4, 17);
+unset ($TSa5); // 68
+$TSa5 = (array) $TSa5; // 69
+__log__ ("TSa5", $TSa5, 19);
+$TSNNi8 = $TLE3; // 70
+__log__ ("TSNNi8", $TSNNi8, 20);
+$TSa5[$TLE2] = $TSNNi8; // 71
+$TSNNi9 = $TLE4; // 72
+__log__ ("TSNNi9", $TSNNi9, 22);
+$TSa5[] = $TSNNi9; // 73
+$a = $TSa5; // 74
+__log__ ("a", $a, 24);
+$b = takes_array ($a);// , Call: 77, Return: 78, After: 75 function call
+__log__ ("b", $b, 25);
+/*
+Native classes and their program labels
+class directoryiterator (81 )
+class exception (84 )
+    getmessage 86 (TValue {value = fromList [NativeString]})
+    getprevious 88 (TValue {value = fromList [NativeObject "exception"]})
+    getcode 90 (TValue {value = fromList [NativeString,NativeInteger]})
+    getfile 92 (TValue {value = fromList [NativeString]})
+    getline 94 (TValue {value = fromList [NativeInteger]})
+    gettraceasstring 96 (TValue {value = fromList [NativeString]})
+    __tostring 98 (TValue {value = fromList [NativeString]})
+    __clone 100 (TValue {value = fromList [NativeNull]})
+class filesystemiterator (103 )
+class invalidargumentexception (106 )
+class logicexception (109 )
+class outofboundsexception (112 )
+class recursivedirectoryiterator (115 )
+class recursiveiteratoriterator (118 )
+class runtimeexception (121 )
+class simplexmlelement (124 )
+    asxml 126 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeString,NativeBoolean]}})
+    attributes 128 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeBoolean]}, right = TValue {value = fromList [NativeObject "simplexmlelement"]}}})
+class splfileinfo (131 )
+    getatime 133 (TValue {value = fromList [NativeInteger]})
+    getbasename 135 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeString]}})
+    getctime 137 (TValue {value = fromList [NativeInteger]})
+    getextension 139 (TValue {value = fromList [NativeString]})
+    getfileinfo 141 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeObject "splfileinfo"]}})
+    getfilename 143 (TValue {value = fromList [NativeString]})
+    getgroup 145 (TValue {value = fromList [NativeInteger]})
+    getinode 147 (TValue {value = fromList [NativeInteger]})
+    getlinktarget 149 (TValue {value = fromList [NativeString]})
+    getmtime 151 (TValue {value = fromList [NativeInteger]})
+    getowner 153 (TValue {value = fromList [NativeInteger]})
+    getpath 155 (TValue {value = fromList [NativeString]})
+    getpathinfo 157 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeObject "splfileinfo"]}})
+    getpathname 159 (TValue {value = fromList [NativeString]})
+    getperms 161 (TValue {value = fromList [NativeInteger]})
+    getrealpath 163 (TValue {value = fromList [NativeString]})
+    getsize 165 (TValue {value = fromList [NativeInteger]})
+    gettype 167 (TValue {value = fromList [NativeString]})
+    isdir 169 (TValue {value = fromList [NativeBoolean]})
+    isexecutable 171 (TValue {value = fromList [NativeBoolean]})
+    isfile 173 (TValue {value = fromList [NativeBoolean]})
+    islink 175 (TValue {value = fromList [NativeBoolean]})
+    isreadable 177 (TValue {value = fromList [NativeBoolean]})
+    iswritable 179 (TValue {value = fromList [NativeBoolean]})
+    openFile 181 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeBoolean]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeResource File]}, right = TValue {value = fromList [NativeObject "splfileobject"]}}}})
+    setfileclass 183 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeNull]}})
+    setinfoclass 185 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeNull]}})
+    __toString 187 (TValue {value = fromList [NativeString]})
+class ziparchive (190 )
+    addemptydir 192 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+    addfile 194 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean]}}}}})
+    addfromstring 196 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    addglob 198 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeArray (fromList [NativeString]) (fromList [NativeString,NativeBoolean])]}, right = TValue {value = fromList [NativeBoolean]}}}})
+    addpattern 200 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeArray (fromList [NativeString]) (fromList [NativeString,NativeBoolean])]}, right = TValue {value = fromList [NativeBoolean]}}}})
+    close 202 (TValue {value = fromList [NativeBoolean]})
+    deleteindex 204 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean]}})
+    deletename 206 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+    extractto 208 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeString,NativeArray (fromList [NativeInteger]) (fromList [NativeString])]}, right = TValue {value = fromList [NativeBoolean]}}})
+    getarchivecomment 210 (TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}})
+    getcommentindex 212 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}})
+    getcommentname 214 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}})
+    getfromindex 216 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}}})
+    getfromname 218 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}}})
+    getnameindex 220 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeString]}}})
+    getstatusstring 222 (TValue {value = fromList [NativeString]})
+    getstream 224 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeResource File]}})
+    locatename 226 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeInteger]}}})
+    open 228 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean,NativeInteger]}}})
+    renameindex 230 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    renamename 232 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    setarchivecomment 234 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+    setcommentindex 236 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    setcommentname 238 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}}})
+    statindex 240 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeArray (fromList [NativeString]) (fromList [NativeString,NativeInteger])]}}})
+    statname 242 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TFun {output = False, optional = True, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeFalse,NativeArray (fromList [NativeString]) (fromList [NativeString,NativeInteger])]}}})
+    unchangeall 244 (TValue {value = fromList [NativeBoolean]})
+    unchangearchive 246 (TValue {value = fromList [NativeBoolean]})
+    unchangeindex 248 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeInteger]}, right = TValue {value = fromList [NativeBoolean]}})
+    unchangename 250 (TFun {output = False, optional = False, left = TValue {value = fromList [NativeString]}, right = TValue {value = fromList [NativeBoolean]}})
+*/
+?>

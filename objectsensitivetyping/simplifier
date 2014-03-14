@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ~/Development/haskell/objectsensitivetyping/
+phc --run=simplify.la,presua.la,postsua.la,postashred.la,lowertarget.la,lowerarray.la,preashred.la --dump=simplify.la  --include --include-searchdir=~/Development/haskell/objectsensitivetyping/projects/algo --include-name
+cd -

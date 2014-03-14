@@ -1,0 +1,6 @@
+6:TLE0:string
+7:TLE1:string
+9:TLE2:string
+10:TLE3:boolean
+12:TLE4:string
+13:TLE5:integer

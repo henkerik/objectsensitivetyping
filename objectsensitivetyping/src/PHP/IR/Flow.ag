@@ -1,0 +1,891 @@
+{
+-------------------------------------------------------------------------------
+-- Module    :  PHP.IR
+-------------------------------------------------------------------------------
+}
+
+imports
+{
+import Data.IntMap as IM hiding (foldr)
+import Data.Map as M hiding (foldr)
+import Data.Maybe
+import Control.Applicative hiding (Const)
+
+--import qualified Framework.Program as P
+import Debug.Trace
+
+--import qualified FType as FT
+
+--import qualified Native.NativeType as NT
+}
+
+
+-------------------------------------------------------------------------------
+-- Labels
+-------------------------------------------------------------------------------
+
+
+attr Program MaybeStmt Stmt Member MemberList Param ParamList Clause ClauseList NativeClassDecl NativeClassDeclList NativeConstructorDecl NativeMethodDecl NativeMethodDeclList NativeClassConstantDecl NativeClassConstantDeclList MaybeConst Const ArrayElem ArrayElemList
+    chn labels :: {Label}
+    
+sem Stmt
+    | ClassDecl If While Foreach Skip Return Echo Break Continue Declare Assign Cast PreIncr PreDecr BinaryOp UnaryOp Unset Define Lookup ReadArray WriteArray ReadField WriteField WriteStaticField ReadStaticField NativeFunctionCall NativeConstructorCall Throw CreateIterator Die Clone InstanceOf
+        loc.label :: uniqueref labels
+
+    | FunctionCall StaticCall MethodCall ConstructorCall ResolvedCall
+        loc.lc  :: uniqueref labels -- Call
+        loc.lr  :: uniqueref labels -- Return
+        loc.lre :: uniqueref labels -- Exception Return
+        loc.la  :: uniqueref labels -- After
+        loc.lae :: uniqueref labels -- Exception After
+    
+    | FunctionDecl 
+        loc.ln  :: uniqueref labels -- Entry
+        loc.lx  :: uniqueref labels -- Exit
+        loc.lxe :: uniqueref labels -- Exit Exception
+        
+sem Member       
+    | MethodDecl 
+        loc.ln  :: uniqueref labels -- Entry
+        loc.lx  :: uniqueref labels -- Exit
+        loc.lxe :: uniqueref labels -- Exit Exception
+
+sem Clause
+    | Clause
+        loc.label :: uniqueref labels
+        
+sem NativeClassDecl
+    | NativeClassDecl
+        loc.label :: uniqueref labels
+        
+sem NativeConstructorDecl
+    | NativeConstructorDecl 
+        loc.label :: uniqueref labels
+        loc.lxe   :: uniqueref labels -- Exit Exception
+        
+sem NativeMethodDecl
+    | NativeMethodDecl
+        loc.label :: uniqueref labels
+        loc.lxe   :: uniqueref labels -- Exit Exception
+        
+sem Const
+    | Array
+        loc.label :: uniqueref labels
+        
+-------------------------------------------------------------------------------
+-- Init
+-------------------------------------------------------------------------------
+       
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList 
+    syn init use {<|>} {Nothing} :: {Maybe Label}
+
+sem Program
+    | Program
+        lhs.init = @s.init
+
+sem Stmt
+    | If While Foreach Skip Return Throw Echo Break Continue Declare Assign Cast PreIncr PreDecr BinaryOp UnaryOp Unset Define Lookup ReadArray WriteArray ReadField WriteField WriteStaticField ReadStaticField NativeFunctionCall NativeConstructorCall CreateIterator Die Clone InstanceOf
+        lhs.init = Just @label
+    | Sequence 
+        lhs.init = @f.init <|> @s.init
+    | FunctionCall StaticCall MethodCall ConstructorCall ResolvedCall
+        lhs.init = Just @lc
+    | FunctionDecl ClassDecl InterfaceDecl
+        lhs.init = Nothing
+    | Try
+        lhs.init = @s.init
+
+sem MaybeStmt
+    | Just
+        lhs.init = @just.init
+
+
+-------------------------------------------------------------------------------
+-- Break and Continue Labels
+-------------------------------------------------------------------------------    
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn breaks use {++} {[]} :: {[Label]}
+    syn continues use {++} {[]} :: {[Label]}
+
+sem Stmt
+    | Break
+        lhs.breaks = [@label]
+    | Continue
+        lhs.continues = [@label]
+    | FunctionDecl
+        lhs.breaks    = []
+        lhs.continues = []
+
+        
+
+-------------------------------------------------------------------------------
+-- Final
+-------------------------------------------------------------------------------
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn final use {<|>} {Nothing} :: {Maybe [Label]}
+
+sem Program 
+    | Program
+        lhs.final = @s.final
+
+sem Stmt
+    | Skip Echo Break Continue Declare Assign Cast PreIncr PreDecr BinaryOp UnaryOp Unset Define Lookup ReadArray WriteArray ReadField WriteField WriteStaticField ReadStaticField NativeFunctionCall NativeConstructorCall CreateIterator Clone InstanceOf
+        lhs.final = Just [@label]
+    | FunctionCall StaticCall MethodCall ConstructorCall ResolvedCall
+        lhs.final = Just [@la]
+    | While Foreach
+        lhs.final = Just $ (:) @label @s.breaks
+    | Sequence 
+        lhs.final = @s.final <|> @f.final
+    | If
+        lhs.final = (++) <$> @f.final <*> @s.final
+    | FunctionDecl ClassDecl InterfaceDecl
+        lhs.final = Nothing
+    | Try 
+        lhs.final = (++) <$> @s.final <*> @clauses.final
+    | Return Throw Die
+        lhs.final = Just []
+    
+sem ClauseList
+    | Nil
+        lhs.final = Just []
+    | Cons
+        lhs.final = (++) <$> @hd.final <*> @tl.final
+        
+sem MaybeStmt
+    | Just
+        lhs.final = @just.final
+
+-------------------------------------------------------------------------------
+-- Flow
+-------------------------------------------------------------------------------
+
+{
+addInit  l = maybe [] (\l' -> [(l,l')])
+addFinal l = maybe [] (\ls -> [(l',l) | l' <- ls])
+}
+
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn flow use {++} {[]} :: {[(Label,Label)]}
+    
+  
+attr MaybeStmt Stmt Member Clause ClauseList
+    syn returns use {++} {[]} :: {[Label]}
+    
+sem Program
+    | Program
+        -- Default Constructor
+        +flow = (++) $ [(0,1)]
+
+sem Stmt
+    | Sequence 
+        +flow = (++) $ if isNothing @s.init || isNothing @f.final then [] else [(l, fromJust @s.init) | l <- fromJust @f.final]
+    | If 
+        +flow = (++) $ addInit @label @f.init ++ addInit @label @s.init
+    | While Foreach
+        +flow = (++) $ addInit @label @s.init ++ addFinal @label @s.final ++ [(l, @label) | l <- @s.continues]
+    | Return
+        lhs.returns = [@label]
+    | FunctionDecl 
+        +flow = (++) $ addInit @ln @s.init ++ addFinal @lx @s.final ++ [(l, @lx) | l <- @s.returns]
+        
+
+sem Member
+    | MethodDecl
+        +flow = (++) $ if @isAbstract then [] else addInit @ln @s.init ++ addFinal @lx @s.final ++ [(l, @lx) | l <- @s.returns] 
+                    
+sem Clause
+    | Clause
+        +flow = (++) $ addInit @label @s.init
+                
+-------------------------------------------------------------------------------
+-- Binary Flow
+-------------------------------------------------------------------------------
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn binaryCallFlow   use {`IM.union`} {IM.empty} :: {IM.IntMap (S.Set (Label,Label))}
+    syn binaryReturnFlow use {`IM.union`} {IM.empty} :: {IM.IntMap (S.Set (Label,Label))}
+    
+sem Stmt
+    | MethodCall StaticCall FunctionCall ConstructorCall ResolvedCall
+        lhs.binaryReturnFlow = IM.fromList [(@lr,  S.singleton (@lc,@la))
+                                           ,(@lre, S.singleton (@lc,@lae))]
+        
+        lhs.binaryCallFlow   = IM.singleton @lc (S.fromList [(@lr,@la),(@lre,@lae)])
+            
+
+-------------------------------------------------------------------------------
+-- Nodes
+-------------------------------------------------------------------------------
+
+attr MaybeStmt Stmt Member MemberList Clause ClauseList NativeClassDecl NativeClassDeclList NativeConstructorDecl NativeMethodDecl NativeMethodDeclList NativeFieldDecl NativeFieldDeclList
+    inh ty        :: {Maybe Type}
+    inh allocator :: {Label} 
+    
+sem Program
+    | Program
+        s.ty           = Nothing
+        s.allocator    = 4  -- Allocator label used for allocations in the main program stmt
+
+sem Stmt        
+    | ClassDecl
+        members.ty        = Just @name  
+        members.allocator = @label
+        
+sem NativeClassDecl
+    | NativeClassDecl
+        methods.ty     = Just @name
+        constructor.ty = Just @name
+        fields.ty      = Just @name
+        
+        methods.allocator = @label
+
+{
+data Node = SN Stmt
+          | EN Clause
+          | MN NativeMethodDecl
+          | CN NativeConstructorDecl
+          deriving (Eq,Ord,Show)
+}
+        
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList NativeClassDecl NativeClassDeclList NativeConstructorDecl NativeMethodDecl NativeMethodDeclList
+    syn nodes use {`IM.union`} {IM.empty} :: {IntMap Node}
+    
+sem Program
+    | Program
+        -- Default Constructor
+        +nodes = IM.union $ IM.fromList [(0, SN $ Entry DefaultConstructor)
+                                        ,(1, SN $ Exit DefaultConstructor)
+                                        ,(2, SN $ ExitException DefaultConstructor)
+                                        ,(3, SN $ Skip)]
+    
+sem Clause
+    | Clause
+        +nodes = IM.union $ IM.singleton @label (EN @self)
+
+sem Stmt
+    | Clone Foreach Skip Return Throw Declare Assign Cast PreIncr PreDecr BinaryOp UnaryOp Unset Define Lookup ReadArray WriteArray ReadField WriteField WriteStaticField ReadStaticField NativeFunctionCall NativeConstructorCall CreateIterator InstanceOf
+        +nodes = IM.union $ IM.singleton @label (SN @self)
+    | While Echo Break Continue If Die
+        +nodes = IM.union $ IM.singleton @label (SN Skip)
+    | ConstructorCall MethodCall StaticCall FunctionCall ResolvedCall
+        +nodes = IM.union $ IM.fromList [(@lc,  SN @self)
+                                        ,(@lr,  SN CallReturn)
+                                        ,(@lre, SN ExceptionReturn)
+                                        ,(@la,  SN CallAfter)
+                                        ,(@lae, SN ExceptionAfter)
+                                        ]
+    | FunctionDecl
+        +nodes = IM.union $ IM.fromList [(@ln,  SN $ Entry         (Function @name))
+                                        ,(@lx,  SN $ Exit          (Function @name))
+                                        ,(@lxe, SN $ ExitException (Function @name))]                                
+
+        
+sem Member
+    | MethodDecl
+        +nodes = IM.union $ IM.fromList [(@ln,  SN $ Entry         (selectCallableUnit (fromJust @lhs.ty) @name))
+                                        ,(@lx,  SN $ Exit          (selectCallableUnit (fromJust @lhs.ty) @name))
+                                        ,(@lxe, SN $ ExitException (selectCallableUnit (fromJust @lhs.ty) @name))]
+                                        
+sem NativeConstructorDecl
+    | NativeConstructorDecl 
+        +nodes = IM.union $ IM.fromList [(@label, CN @self)
+                                        ,(@lxe,   SN Skip)]
+
+sem NativeMethodDecl
+    | NativeMethodDecl
+        +nodes = IM.union $ IM.fromList [(@label, MN @self)
+                                        ,(@lxe,   SN Skip)]
+
+{
+selectCallableUnit ty "__construct" = Constructor ty
+selectCallableUnit ty name          = Method ty name
+}
+-------------------------------------------------------------------------------
+-- Call Nodes & Entry Nodes
+-------------------------------------------------------------------------------
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList NativeClassDecl NativeClassDeclList NativeMethodDecl NativeMethodDeclList 
+    syn callNodes  use {`S.union`} {S.empty} :: {S.Set Label}
+    syn entryNodes use {`S.union`} {S.empty} :: {S.Set Label}
+    
+sem Stmt 
+    | MethodCall StaticCall FunctionCall ResolvedCall
+        lhs.callNodes = S.singleton @lc
+    -- Omitted because the entryNodes are used to count the number of call graph edges and we wish to ignore regular functions here.
+    --| FunctionDecl
+      --  +entryNodes = S.union $ S.singleton @ln
+
+sem Member
+    | MethodDecl
+        +entryNodes = S.union $ S.singleton @ln
+
+sem NativeMethodDecl
+    | NativeMethodDecl
+        +entryNodes = S.union $ S.singleton @label 
+
+-------------------------------------------------------------------------------
+-- Allocation Nodes
+-------------------------------------------------------------------------------
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList MaybeConst Const ArrayElem ArrayElemList NativeMethodDecl NativeMethodDeclList NativeClassDecl NativeClassDeclList Param ParamList
+    syn allocations use {`IM.union`} {IM.empty} :: {IM.IntMap Type}
+    syn allocators  use {`IM.union`} {IM.empty} :: {IM.IntMap Label}
+    
+sem Stmt 
+    | NativeConstructorCall
+        +allocations = IM.union $ IM.singleton @label @ty
+        +allocators  = IM.union $ IM.singleton @label @lhs.allocator
+    | ConstructorCall
+        +allocations = IM.union $ IM.singleton @lc @ty
+        +allocators  = IM.union $ IM.singleton @lc @lhs.allocator
+    | NativeFunctionCall
+        +allocations = IM.union $ IM.fromList [(@label,ty) | ty <- S.toList @types]
+    | WriteArray 
+        +allocations = IM.union $ IM.singleton @label "array"
+    | WriteField      
+        +allocations = IM.union $ IM.singleton @label "stdclass"   
+    | Cast 
+        +allocations = IM.union (if @cast == CastArray 
+                                 then IM.singleton @label "array"
+                                 else IM.empty)
+                          
+sem NativeMethodDecl
+    | NativeMethodDecl
+        +allocations = IM.union $ IM.fromList [(@label,ty) | ty <- S.toList (returnTypes @typeset)]
+
+sem Const
+    | Array
+        +allocations = IM.union $ IM.singleton @label "array"
+                
+    
+    
+    
+        
+-------------------------------------------------------------------------------
+-- Return labels
+-------------------------------------------------------------------------------                  
+        
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn return use {`IM.union`} {IM.empty} :: {IntMap Label}
+
+sem Stmt
+    | MethodCall StaticCall FunctionCall ConstructorCall ResolvedCall
+        lhs.return = IM.singleton @lc @lr
+        
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn returnException use {`IM.union`} {IM.empty} :: {IntMap Label}
+
+sem Stmt
+    | MethodCall StaticCall FunctionCall ConstructorCall ResolvedCall
+        lhs.returnException = IM.singleton @lc @lre
+
+
+
+
+
+
+
+{
+
+class IsStatic a where
+    isStatic :: a -> Bool
+
+instance IsStatic MethodDeclaration where
+    isStatic = methodIsStatic
+
+instance IsStatic FieldDeclaration where
+    isStatic = fieldIsStatic
+
+data FunctionDeclaration = FunctionDeclaration {
+    functionName     :: FunctionName,
+    functionParams   :: [Param],
+    functionVars     :: S.Set Var,
+    functionLn       :: Label,
+    functionLx       :: Label,
+    functionLxe      :: Label
+} deriving (Show,Eq,Ord)
+
+data FieldDeclaration  = FieldDeclaration { 
+    fieldVisibility  :: Visibility,
+    fieldIsStatic    :: Bool,
+    fieldClass       :: Type,
+    fieldName        :: FieldName,
+    fieldValue       :: Maybe Const
+}                      | NativeFieldDeclaration {
+    fieldIsStatic    :: Bool,
+    fieldClass       :: Type,
+    fieldName        :: FieldName,
+    fieldType        :: NativeTerminalType
+} deriving (Show, Ord, Eq)
+
+
+data MethodDeclaration = MethodDeclaration { 
+    methodVisibility :: Visibility,
+    methodIsStatic   :: Bool,
+    methodIsAbstract :: Bool,
+    methodIsFinal    :: Bool,
+    methodName       :: MethodName, 
+    methodParams     :: [Param],
+    methodVars       :: S.Set Var,
+    ln               :: Label,
+    lx               :: Label,
+    lxe              :: Label
+}                      | NativeMethodDeclaration {
+    methodIsStatic   :: Bool,
+    methodName       :: MethodName,
+    ln               :: Label,
+    lx               :: Label,
+    lxe              :: Label,
+    typeset          :: NativeType NativeTypeSet
+} deriving (Show, Ord, Eq)
+
+data ClassDeclaration  = ClassDeclaration { 
+    ty               :: Type, 
+    parent           :: Maybe Type,
+    label            :: Label,
+    fields           :: M.Map FieldName  FieldDeclaration, 
+    methods          :: M.Map MethodName MethodDeclaration,
+    classConstants   :: M.Map ClassConstantName Const
+}                      | InterfaceDeclaration {
+    ty               :: Type,
+    fields           :: M.Map FieldName  FieldDeclaration, 
+    classConstants   :: M.Map ClassConstantName Const
+}                      | NativeClassDeclaration {
+    ty               :: Type,
+    parent           :: Maybe Type,
+    fields           :: M.Map FieldName FieldDeclaration,
+    methods          :: M.Map MethodName MethodDeclaration
+} deriving (Show, Ord, Eq)
+
+
+
+functionDeclarationByName g f = case M.lookup f . functions $ g of
+    Nothing          -> error $ "A function named " ++ show f ++ " does not exist"
+    Just declaration -> declaration
+
+methodDeclarationByName g t m = let methodDeclaration = do classDeclaration <- classDeclarationByType g t 
+                                                           M.lookup m (methods classDeclaration)
+                                in case methodDeclaration of
+                                    Nothing          -> error $ "A method named " ++ show m ++ " is not declared on type " ++ show t
+                                    Just declaration -> declaration
+    
+classConstantByName g t cons = let const = do classDeclaration <- classDeclarationByType g t 
+                                              M.lookup cons (classConstants classDeclaration)
+                               in case const of 
+                                   Nothing    -> error $ "A class constant named " ++ show cons ++ " is not declared on type " ++ show t
+                                   Just const -> const
+
+classDeclarationByType :: Graph -> Type -> Maybe ClassDeclaration
+classDeclarationByType g t = M.lookup t . classes $ g  -- let result = M.lookup t . classes $ g 
+--    in case result of 
+--        Nothing          -> Nothing -- error $ "Unknown type: " ++ show t
+--        Just declaration -> Just declaration
+
+methodExists g t m = case classDeclarationByType g $ t of
+    Nothing   -> False
+    Just decl -> M.member m . methods $ decl
+
+}
+
+-------------------------------------------------------------------------------
+-- Functions
+-------------------------------------------------------------------------------
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn vars use {`S.union`} {S.empty} :: {S.Set Var}
+    
+sem Stmt
+    | BinaryOp 
+        lhs.vars = S.fromList [@left, @right]
+    | Assign Cast WriteField WriteStaticField WriteArray Clone
+        lhs.vars = S.fromList [@from]
+    | FunctionDecl
+        lhs.vars = S.empty
+    | ConstructorCall NativeFunctionCall FunctionCall MethodCall StaticCall ResolvedCall NativeConstructorCall
+        lhs.vars = S.fromList @params
+    | Return Throw Echo
+        lhs.vars = S.fromList [@v]
+    | InstanceOf UnaryOp
+        lhs.vars = S.fromList [@var']
+    | PreIncr PreDecr Unset Define Lookup Die
+        lhs.vars = S.fromList [@var]
+
+sem Member
+    | MethodDecl
+        lhs.vars = S.empty
+
+
+attr Program Stmt
+    syn functions use {`M.union`} {M.empty} :: {M.Map Type FunctionDeclaration}
+
+
+sem Stmt
+    | FunctionDecl
+        lhs.functions = M.singleton @name $ FunctionDeclaration @name @params.self @s.vars @ln @lx @lxe
+
+-------------------------------------------------------------------------------
+-- Classes
+-------------------------------------------------------------------------------
+
+attr Program Stmt NativeClassDecl NativeClassDeclList
+    syn classes use {`M.union`} {M.empty} :: {M.Map Type ClassDeclaration}
+--    inh classes'                          :: {M.Map Type ClassDeclaration}
+
+--sem Program
+--    | Program
+--        s.classes' = @s.classes
+
+sem Stmt
+    | ClassDecl
+        lhs.classes = M.singleton @name $ ClassDeclaration @name @extend @label @members.fields @members.methods @members.classConstants
+    | InterfaceDecl
+        lhs.classes = M.singleton @name $ InterfaceDeclaration @name M.empty @members.classConstants
+
+sem NativeClassDecl
+    | NativeClassDecl
+        lhs.classes = M.singleton @name $ NativeClassDeclaration @name @extend @fields.fields (@constructor.methods `M.union` @methods.methods)
+
+-------------------------------------------------------------------------------
+-- Methods
+-------------------------------------------------------------------------------
+
+attr Stmt Member MemberList NativeMethodDecl NativeMethodDeclList NativeConstructorDecl
+    syn methods use {`M.union`} {M.empty} :: {M.Map MethodName MethodDeclaration}
+
+sem Member
+    | MethodDecl 
+        lhs.methods = M.singleton @name (MethodDeclaration @visibility @isStatic @isAbstract @isFinal @name @params.self @s.vars @ln @lx @lxe)
+sem Stmt
+    | ClassDecl
+        lhs.methods = M.empty
+sem NativeMethodDecl
+    | NativeMethodDecl
+        lhs.methods = M.singleton @name (NativeMethodDeclaration @isStatic @name @label @label @lxe @typeset)
+sem NativeConstructorDecl
+    | NativeConstructorDecl
+        lhs.methods = M.singleton "__construct" (NativeMethodDeclaration False "__construct" @label @label @lxe $ TValue (S.singleton NativeNull))
+
+-------------------------------------------------------------------------------
+-- Fields
+-------------------------------------------------------------------------------
+
+attr Stmt Member MemberList NativeFieldDecl NativeFieldDeclList
+    syn fields use {`M.union`} {M.empty} :: {M.Map FieldName FieldDeclaration}
+
+sem Member
+    | FieldDecl
+        lhs.fields = M.singleton @name (FieldDeclaration @visibility @isStatic (fromJust @lhs.ty) @name @value.self)
+sem Stmt
+    | ClassDecl
+        lhs.fields = M.empty
+        
+sem NativeFieldDecl
+    | NativeFieldDecl 
+        lhs.fields = M.singleton @name (NativeFieldDeclaration False (fromJust @lhs.ty) @name @typeset)
+
+
+-------------------------------------------------------------------------------
+-- Class Constants
+-------------------------------------------------------------------------------
+
+attr Stmt Member MemberList
+    syn classConstants use {`M.union`} {M.empty} :: {M.Map ClassConstantName Const}
+
+sem Member
+    | ConstantDecl
+        lhs.classConstants = M.singleton @name @value.self
+
+        
+
+-------------------------------------------------------------------------------
+-- Native Constructors and Methods
+-------------------------------------------------------------------------------
+
+-- attr Program NativeClass NativeClassList NativeConstructor
+--     syn nativeConstructors use {`M.union`} {M.empty} :: {M.Map Type NativeConstructorDeclaration}
+-- 
+-- sem NativeConstructor 
+--     | NativeConstructor
+--         lhs.nativeConstructors = M.singleton (fromJust @lhs.ty) (NativeConstructorDeclaration @ftype @label)
+--         
+--         
+-- attr Program NativeClass NativeClassList NativeMethod NativeMethodList
+--     syn nativeMethods use {`M.union`} {M.empty} :: {M.Map (Type,MethodName) NativeMethodDeclaration}
+--     
+-- sem NativeMethod
+--     | NativeMethod
+--         lhs.nativeMethods = M.singleton (fromJust @lhs.ty,@name) (NativeMethodDeclaration @ftype @label)
+
+-------------------------------------------------------------------------------
+-- Catch Clauses
+-------------------------------------------------------------------------------
+
+{
+data CatchClause = TopClause Label
+                 | CatchClause Type Label
+                 | NoClause
+                 deriving (Show,Eq,Ord)                 
+}
+
+-- clause stack
+attr MaybeStmt Stmt Member MemberList Clause ClauseList
+    inh clauseStack :: {[[CatchClause]]}
+    
+sem Program
+    | Program
+        s.clauseStack = [[NoClause]]
+    
+sem Member
+    | MethodDecl 
+        s.clauseStack = [[TopClause @lxe]]
+        
+sem Stmt
+    | FunctionDecl
+        s.clauseStack = [[TopClause @lxe]]
+    | Try 
+        s.clauseStack = (:) @clauses.clauses @lhs.clauseStack
+            
+            
+attr Clause ClauseList Stmt
+    syn clauses use {++} {[]} :: {[CatchClause]}
+
+sem Clause 
+    | Clause 
+        lhs.clauses = [CatchClause @ty @label]
+
+-- lookup mechanism
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList
+    syn clauseStacks use {`IM.union`} {IM.empty} :: {IntMap [[CatchClause]]}
+
+sem Stmt 
+    | ConstructorCall FunctionCall MethodCall StaticCall ResolvedCall
+        lhs.clauseStacks = IM.singleton @lae @lhs.clauseStack
+    | Throw 
+        lhs.clauseStacks = IM.singleton @label @lhs.clauseStack
+        
+
+
+
+{
+nextUnique :: Int -> (Int, Int)
+nextUnique u = (u+1, u)
+    
+data Graph = Graph { 
+    init               :: Label,
+    final              :: [Label], 
+    flow               :: IntMap (S.Set Label), 
+    binaryCallFlow     :: IntMap (S.Set (Label,Label)),
+    binaryReturnFlow   :: IntMap (S.Set (Label,Label)),
+    nodes              :: IntMap Node, 
+    returnSel          :: IntMap Label,
+    returnExceptionSel :: IntMap Label,
+    allocations        :: IntMap Type,
+    allocators         :: IntMap Label,
+    classes            :: Map Type ClassDeclaration, 
+    functions          :: Map FunctionName FunctionDeclaration,
+    initialVars        :: S.Set Var,
+    clauseStacks       :: IntMap [[CatchClause]],
+    assignments        :: IntMap Var,
+    methodCallSites    :: IntMap (Var,MethodName),
+    callNodes          :: S.Set Label,
+    entryNodes         :: S.Set Label
+}
+
+getStaticFields :: Graph -> [FieldDeclaration]
+getStaticFields graph = do cls   <- M.elems . classes $ graph
+                           field <- L.filter isStatic . M.elems . fields $ cls
+                           return field
+
+-- Including inherited fields                        
+getFields :: Graph -> Type -> [FieldDeclaration] 
+getFields graph ty = do classDecl <- L.map (\ty -> M.findWithDefault (error $ "Non existing type: " ++ show ty) ty (classes graph)) . S.toList . getSubtypes graph $ ty
+                        field <- L.filter (not . isStatic) . M.elems . fields $ classDecl
+                        return field
+}
+
+
+attach Program
+{
+-- This code disappears by the UUAGC system, moved to PHP/Interface.hs
+graph :: Program -> Graph
+graph p = Graph init final flow binaryFlow nodes returnSel returnExceptionSel allocations classes functions initialVars clauseStacks assignments
+    where
+        init               = maybe (error "Init unknown") id . init_Syn_Program . execute $ p
+        final              = maybe (error "Final unknown") id . final_Syn_Program . execute $ p
+        flow               = IM.fromListWith S.union . L.map (\(a,b) -> (a, S.singleton b)) . flow_Syn_Program . execute $ p
+        binaryCallFlow     = binaryCallFlow_Syn_Program . execute $ p
+        binaryReturnFlow   = binaryReturnFlow_Syn_Program . execute $ p
+        nodes              = nodes_Syn_Program . execute $ p
+        returnSel          = return_Syn_Program . execute $ p
+        returnExceptionSel = returnException_Syn_Program . execute $ p
+        allocations        = allocations_Syn_Program . execute $ p
+        classes            = classes_Syn_Program . execute $ p
+        functions          = functions_Syn_Program . execute $ p
+        initialVars        = vars_Syn_Program . execute $ p
+        clauseStacks       = clauseStacks_Syn_Program . execute $ p
+        assignments        = assignments_Syn_Program . execute $ p
+        isCallLabel        = S.member l . callLabels_Syn_Program . execute $ p
+        isEntryLabel       = 
+}
+
+{        
+node :: Graph -> Label -> Node
+node g l = case IM.lookup l (nodes g) of 
+    Nothing -> error $ "Unknown label: " ++ show l
+    Just n  -> n
+
+return' :: Graph -> Label -> Label    
+return' g l = case IM.lookup l . returnSel $ g of
+    Nothing -> error $ "Unknown call label: " ++ show l
+    Just l' -> l'
+    
+returnException :: Graph -> Label -> Label
+returnException g l = case IM.lookup l . returnExceptionSel $ g of
+    Nothing -> error $ "Unknown call label: " ++ show l
+    Just l' -> l'
+
+entry :: Graph -> CallableUnit -> Label
+entry g (Method t m)          = ln (methodDeclarationByName g t m)
+entry g (StaticMethod t m)    = ln (methodDeclarationByName g t m)
+entry g (Constructor t)       = ln (methodDeclarationByName g t "__construct")
+entry g DefaultConstructor    = 0
+entry g (Function f)          = functionLn (functionDeclarationByName g f)
+entry g (NativeConstructor t) = case methodDeclarationByName g t "__construct" of
+    decl@(MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> error $ "Expecting a native constructor"
+    decl@(NativeMethodDeclaration _ _ _ _ _ _ )  -> ln decl 
+entry g (NativeMethod t m)    = case methodDeclarationByName g t m of 
+    decl@(MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> error $ "Expecting a native method"
+    decl@(NativeMethodDeclaration _ _ _ _ _ _)   -> ln decl
+    
+    
+
+
+exit :: Graph -> CallableUnit -> Label
+exit g (Method t m)          = lx (methodDeclarationByName g t m)
+exit g (StaticMethod t m)    = lx (methodDeclarationByName g t m)
+exit g (Constructor t)       = lx (methodDeclarationByName g t "__construct")
+exit g DefaultConstructor    = 1
+exit g (Function f)          = functionLx (functionDeclarationByName g f)
+exit g (NativeConstructor t) = case methodDeclarationByName g t "__construct" of
+    decl@(MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> error $ "Expecting a native constructor"
+    decl@(NativeMethodDeclaration _ _ _ _ _ _)   -> lx decl 
+exit g (NativeMethod t m)    = case methodDeclarationByName g t m of 
+    decl@(MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> error $ "Expecting a native method"
+    decl@(NativeMethodDeclaration _ _ _ _ _ _)   -> lx decl
+
+
+
+exitException :: Graph -> CallableUnit -> Label
+exitException g (Method t m)          = lxe (methodDeclarationByName g t m)
+exitException g (StaticMethod t m)    = lxe (methodDeclarationByName g t m)
+exitException g (Constructor t)       = lxe (methodDeclarationByName g t "__construct")
+exitException g DefaultConstructor    = 2
+exitException g (Function f)          = functionLxe (functionDeclarationByName g f)
+exitException g (NativeConstructor t) = lxe (methodDeclarationByName g t "__construct")
+exitException g (NativeMethod t m)    = lxe (methodDeclarationByName g t m)
+
+params :: Graph -> CallableUnit -> [Param]
+params g (Method t m)       = methodParams (methodDeclarationByName g t m)
+params g (StaticMethod t m) = methodParams (methodDeclarationByName g t m)
+params g (Constructor t)    = methodParams (methodDeclarationByName g t "__construct")
+params g DefaultConstructor = []
+params g (Function f)       = functionParams (functionDeclarationByName g f)
+
+vars :: Graph -> CallableUnit -> S.Set Var
+vars g (Method t m)       = methodVars (methodDeclarationByName g t m)
+vars g (StaticMethod t m) = methodVars (methodDeclarationByName g t m)
+vars g (Constructor t)    = methodVars (methodDeclarationByName g t "__construct")
+vars g DefaultConstructor = S.empty
+vars g (Function f)       = functionVars (functionDeclarationByName g f)
+
+resolve :: Graph -> CallableUnit -> Maybe CallableUnit
+resolve g (Constructor t) = let methodDeclaration = do classDeclaration  <- classDeclarationByType g t
+                                                       M.lookup "__construct" (methods classDeclaration)
+                            in case methodDeclaration of 
+                                   Nothing   -> let parentType = do classDeclaration  <- classDeclarationByType g t
+                                                                    parent classDeclaration
+                                                in case parentType of 
+                                                    Nothing -> return DefaultConstructor
+                                                    Just t' -> resolve g (Constructor t')
+                                   Just (MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> return $ Constructor t
+                                   Just (NativeMethodDeclaration _ _ _ _ _ _)   -> return $ NativeConstructor t
+    
+    
+    
+ --   case M.lookup "__construct" . methods . classDeclarationByType g $ t of
+ --   Nothing   -> case parent . classDeclarationByType g $ t of
+ --       Nothing -> Just DefaultConstructor
+ --       Just t' -> resolve g (Constructor t')
+ --   Just decl -> case decl of
+ --       (MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> Just $ Constructor t
+ --       (NativeMethodDeclaration _ _ _ _ _ _)   -> Just $ NativeConstructor t
+ --   
+
+resolve g (Method t m) = let methodDeclaration = do classDeclaration  <- classDeclarationByType g t
+                                                    M.lookup m (methods classDeclaration)
+                         in case methodDeclaration of 
+                                Nothing -> let parentType = do classDeclaration  <- classDeclarationByType g t
+                                                               parent classDeclaration
+                                           in case parentType of
+                                               Nothing -> Nothing
+                                               Just t' -> resolve g (Method t' m)
+                                Just (MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> return $ Method t m
+                                Just (NativeMethodDeclaration _ _ _ _ _ _)   -> return $ NativeMethod t m
+    
+    
+  --  trace ("Resolving: " ++ show t ++ "::" ++ show m) $ case M.lookup m . methods . classDeclarationByType g $ t of
+  --  Nothing   -> case parent . classDeclarationByType g $ t of
+  --      Nothing -> Nothing -- error $ "Unable to resolve: " ++ show t ++ "::" ++ show m
+  --      Just t' -> resolve g (Method t' m)
+  --  Just decl -> case decl of
+  --      (MethodDeclaration _ _ _ _ _ _ _ _ _ _) -> Just $ Method t m
+  --      (NativeMethodDeclaration _ _ _ _ _ _)   -> Just $ NativeMethod t m
+    
+    
+-- Given a label of an returnException node and a type return the label of the 
+-- catch clause or the exception exit if the exception is not caught in this procedure    
+resolveCatch :: Graph -> Label -> Type -> Label
+resolveCatch g l ty = case IM.lookup l . clauseStacks $ g of
+    Nothing          -> error $ "Unknown exception return or throw label: " ++ show l
+    Just clauseStack -> match ty (concat clauseStack)
+    where
+        match ty []                       = error $ "Empty clauseStack should not occur"
+        match ty (NoClause:xs)            = 3 -- Special label number for uncaucght exceptions
+        match ty ((TopClause l):xs)       = l
+        match ty ((CatchClause ty' l):xs) = if ty' `S.member` getSubtypes g ty
+                                            then l
+                                            else match ty xs
+      
+-- Should be called getSupertypes!!!!      
+getSubtypes :: Graph -> Type -> S.Set Type      
+getSubtypes g ty = let ty' = do classDeclaration <- classDeclarationByType g ty
+                                parent classDeclaration
+                   in case ty' of 
+                       Nothing  -> S.singleton ty
+                       Just ty' -> S.insert ty (getSubtypes g ty')
+    
+
+    
+getAncestor :: Graph -> Type -> Type
+getAncestor g ty = let ty' = do classDeclaration <- classDeclarationByType g ty
+                                parent classDeclaration
+                   in case ty' of 
+                       Nothing  -> ty
+                       Just ty' -> getAncestor g ty' 
+ 
+
+--    case parent . classDeclarationByType g $ ty of
+--    Nothing  -> S.singleton ty
+--    Just ty' -> S.insert ty (getSubtypes g ty')
+
+typeByLabel :: Graph -> Label -> Type 
+typeByLabel g l = case IM.lookup l . allocations $ g of
+    Just ty -> ty
+    Nothing -> error $ "Unknown allocation node: " ++ show l
+    
+
+}

@@ -1,0 +1,347 @@
+imports
+{
+import CCO.Printing as P hiding (render, join) 
+import Prelude hiding (const)
+import Data.String.Utils
+import Data.List as L
+}
+
+
+-------------------------------------------------------------------------------
+-- Pretty printer for input code
+-------------------------------------------------------------------------------
+
+{
+variable :: String -> Doc
+variable name = text "$" >|< text name
+    
+instance Printable BinaryOp where
+    pp Plus           = text "+"
+    pp Min            = text "-"
+    pp Mul            = text "*"
+    pp Div            = text "/"
+    pp Mod            = text "%"       
+    pp Concat         = text "."
+    pp And            = text "&&"
+    pp Or             = text "||"
+    pp Xor            = text "xor"
+    pp SL             = text "<<"
+    pp SR             = text ">>"
+    pp BAnd           = text "&"
+    pp BOr            = text "|"
+    pp BXor           = text "^"
+    pp IsIdentical    = text "==="
+    pp IsEqual        = text "=="
+    pp IsNotIdentical = text "!=="
+    pp IsNotEqual     = text "!="
+    pp LessEqual      = text "<="
+    pp GreaterEqual   = text ">="
+    pp Less           = text "<"
+    pp Greater        = text ">"
+    
+instance Printable UnaryOp where
+    pp Not            = text "!"
+    pp BNot           = text "~"
+
+instance Printable Visibility where
+    pp Public    = text "public"
+    pp Protected = text "protected"
+    pp Private   = text "private"
+    
+instance Printable Cast where
+    pp CastArray  = parens (text "array")
+    pp CastBool   = parens (text "bool")
+    pp CastInt    = parens (text "int")
+    pp CastObject = parens (text "object")
+    pp CastReal   = parens (text "real")
+    pp CastString = parens (text "string")
+    pp CastUnset  = parens (text "unset")
+
+comment :: (Show a) => a -> Doc
+comment message = space >|< text "//" >|< space >|< showable message
+
+}
+
+attr Program MaybeStmt Stmt Member MemberList Clause ClauseList Param ParamList NativeClassDecl NativeClassDeclList NativeConstructorDecl NativeMethodDecl NativeMethodDeclList MaybeConst Const ArrayElem ArrayElemList
+    syn pp use {>|<} {P.empty}:: {Doc}
+    
+sem Program 
+    | Program
+        lhs.pp = text "<?php" >-< @s.pp >-< text "/*" >-< text "Native classes and their program labels" >-< @nativeClasses.pp >-< text "*/" >-< text "?>"        
+    
+sem Stmt
+    -- Statements
+    | If
+        lhs.pp = text "if" >|< space >|< parens (variable @c) >|< lbrace >-< indent 4 @f.pp >-< rbrace >-< text "else" >|< space >|< lbrace >-< indent 4 @s.pp >-< rbrace
+    | While
+        lhs.pp = text "while" >|< space >|< parens (text "True") >|< lbrace >-< indent 4 @s.pp >-< rbrace
+    | Foreach
+        lhs.pp = text "foreach" >|< space >|< parens (variable @iter >|< space >|< text "as" >|< space >|< maybe P.empty (\var -> variable var >|< space >|< text "=>" >|< space) @key >|< variable @value) >|< space >|< lbrace >-< indent 4 @s.pp >-< rbrace 
+    | Sequence
+        lhs.pp = @f.pp >-< @s.pp
+    | Skip
+        lhs.pp = comment (show @label ++ " skip")
+    | Return
+        lhs.pp = text "return" >|< space >|< variable @v >|< semicolon >|< comment @label
+    | Try 
+        lhs.pp = text "try" >|< space >|< lbrace >-< indent 4 @s.pp >-< rbrace >-< @clauses.pp
+    | Throw
+        lhs.pp = text "throw" >|< space >|< variable @v >|< semicolon >|< comment @label
+    | Echo
+        lhs.pp = text "echo" >|< space >|< variable @v >|< semicolon >|< comment @label
+    | Break
+        lhs.pp = text "break" >|< semicolon >|< comment @label
+    | Continue 
+        lhs.pp = text "continue" >|< semicolon >|< comment @label
+    | Static
+        lhs.pp = text "static" >|< space >|< variable @var >|< space >|< text "=" >|< space >|< @value.pp >|< semicolon 
+    | InstanceOf
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< variable @var' >|< space >|< text "instanceof" >|< space >|< text @ty >|< semicolon 
+        
+    -- Assign and declare
+    | Declare
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< @const.pp >|< semicolon >|< comment @label
+    | Assign
+        lhs.pp = variable @to >|< space >|< text "=" >|< (if @ref then text "&" else P.empty) >|< space >|< variable @from >|< semicolon >|< comment @label
+    | Cast
+        lhs.pp = variable @to >|< space >|< text "=" >|< space >|< pp @cast >|< space >|< variable @from >|< semicolon >|< comment @label
+        
+    -- Fields
+    | WriteField
+        lhs.pp = variable @to >|< text "->" >|< text @field >|< space >|< text "=" >|< (if @ref then text "&" else P.empty) >|< space >|< variable @from >|< semicolon >|< comment @label
+    | ReadField
+        lhs.pp = variable @to >|< space >|< text "=" >|< (if @ref then text "&" else P.empty) >|< space >|< variable @from >|< text "->" >|< text @field >|< semicolon >|< comment @label
+
+    -- Static Fields
+    | WriteStaticField
+        lhs.pp = text @ty >|< colon >|< colon >|< variable @to >|< space >|< text "=" >|< (if @ref then text "&" else P.empty) >|< space >|< variable @from >|< semicolon >|< comment @label
+    | ReadStaticField
+        lhs.pp = variable @to >|< space >|< text "=" >|< (if @ref then text "&" else P.empty) >|< space >|< text @ty >|< colon >|< colon >|< variable @from >|< semicolon >|< comment @label
+    
+    -- Array
+    | ReadArray
+        lhs.pp = variable @to >|< space >|< text "=" >|< (if @ref then text "&" else P.empty) >|< space >|< variable @from >|< brackets (variable @index) >|< semicolon >|< comment @label
+    | WriteArray
+        lhs.pp = variable @to >|< brackets (maybe P.empty variable @index) >|< space >|< text "=" >|< (if @ref then text "&" else P.empty) >|< space >|< variable @from >|< semicolon >|< comment @label
+        
+    | PreIncr
+        lhs.pp = text "++" >|< variable @var >|< semicolon >|< comment @label
+    | PreDecr
+        lhs.pp = text "--" >|< variable @var >|< semicolon >|< comment @label
+
+    -- Binary and unary operator 
+    | BinaryOp
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< variable @left >|< space >|< pp @op >|< space >|< variable @right >|< semicolon >|< comment @label
+    | UnaryOp
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< pp @op >|< variable @var' >|< semicolon >|< comment @label
+        
+    -- Special functions
+    | Unset
+        lhs.pp = text "unset" >|< space >|< parens (variable @var) >|< semicolon >|< comment @label
+    | Define 
+        lhs.pp = text "define" >|< space >|< parens (variable @var >|< comma >|< space >|< variable @value) >|< semicolon >|< comment @label
+    | Lookup
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< showable @name >|< semicolon >|< comment @label >|< comment "lookup"
+    | CreateIterator
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< text "__createIterator__" >|< parens (variable @iter) >|< semicolon >|< comment @label
+    | Die
+        lhs.pp = text "exit" >#< parens (variable @var) >|< semicolon >|< comment @label
+        
+    -- Calls
+    | NativeConstructorCall
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< text "new" >|< space >|< text @ty >|< space >|< parens (pp @params) >|< semicolon >|< text "// " >|< showable @label >|< text " native constructor call"
+    | NativeFunctionCall
+        lhs.pp = maybe P.empty (\var -> variable var >|< space >|< text "=" >|< space) @var >|< text @name >|< space >|< parens (pp @params) >|< semicolon >|< comment (show @label ++ "native call")
+    | FunctionCall 
+        lhs.pp = maybe P.empty (\var -> variable var >|< space >|< text "=" >|< space) @var >|< text @name >|< space >|< parens (pp @params) >|< semicolon >|< text "// " >|< pp (@lc,@lr,@lre,@la,@lae) >|< text " function call"
+    | MethodCall
+        lhs.pp = maybe P.empty (\var -> variable var >|< space >|< text "=" >|< space) @var >|< variable @var' >|< text "->" >|< text @name >|< space >|< parens (pp @params) >|< semicolon >|< text "// " >|< pp (@lc,@lr,@lre,@la,@lae) >|< text " method call"
+    | StaticCall 
+        lhs.pp = maybe P.empty (\var -> variable var >|< space >|< text "=" >|< space) @var >|< text @ty >|< colon >|< colon >|< text @name >|< space >|< parens (pp @params) >|< semicolon >|< text "// " >|< pp (@lc,@lr,@lre,@la,@lae) >|< text " static method call"
+    | ResolvedCall
+        lhs.pp = maybe P.empty (\var -> variable var >|< space >|< text "=" >|< space) @var >|< text @ty >|< colon >|< colon >|< text @name >|< space >|< parens (pp @params) >|< semicolon >|< text "// " >|< pp (@lc,@lr,@lre,@la,@lae) >|< text " resolved method call"
+    | ConstructorCall
+        lhs.pp = variable @var >|< space >|< text "=" >|< space >|< text "new" >|< space >|< text @ty >|< space >|< parens (pp @params) >|< semicolon >|< text "// " >|< pp (@lc,@lr,@lre,@la,@lae) >|< text " constructor call"
+      
+      
+    -- Log
+    | Log
+        lhs.pp = text "__log__" >|< space >|< lparen >|< sepBy [text "\"" >|< text @var >|< text "\"", variable @var, showable @label] (comma >|< space) >|< rparen >|< semicolon
+        
+    | FunctionDecl
+        lhs.pp = text "function" >|< space >|< (if @ref then text "&" else P.empty) >|< text @name >|< space >|< parens @params.pp >|< space >|< comment ("ln: " ++ show @ln ++ ", lx: " ++ show @lx ++ ", lxe: " ++ show @lxe) >-< lbrace >-< indent 4 @s.pp >-< rbrace
+    | InterfaceDecl 
+        lhs.pp = text "interface" >|< space >|< text @name >|< space >|<
+                 (if S.null @extend then P.empty else text "extends" >|< space >|< sepBy (L.map text . S.toList $ @extend) (comma >|< space) >|< space) >|<
+                 lbrace >-< indent 4 @members.pp >-< rbrace
+                 
+                 
+     | ClassDecl
+        lhs.pp = (if @isAbstract then text "abstract" >|< space else P.empty) >|< (if @isFinal then text "final" >|< space else P.empty) >|<
+                 text "class" >|< space >|< text @name >|< space >|< 
+                 (if isNothing @extend then P.empty else text "extends" >|< space >|< text (fromJust @extend) >|< space) >|< 
+                 (if S.null @implements then P.empty else text "implements" >|< space >|< sepBy (L.map text . S.toList $ @implements) (comma >|< space) >|< space) >|< 
+                 lbrace >|< comment (show @label) >-< indent 4 @members.pp >-< rbrace
+
+
+sem NativeClassDeclList 
+    | Cons 
+        lhs.pp = @hd.pp >-< @tl.pp
+    | Nil 
+        lhs.pp = P.empty
+        
+sem NativeClassDecl
+    | NativeClassDecl
+        lhs.pp = text "class" >|< space >|< text @name >|< space >|< parens @constructor.pp >-< indent 4 @methods.pp 
+        
+sem NativeConstructorDecl
+    | NativeConstructorDecl
+        lhs.pp = showable @label >|< space -- >|< showable @ftype
+
+sem NativeMethodDeclList
+    | Cons
+        lhs.pp = @hd.pp >-< @tl.pp
+    | Nil
+        lhs.pp = P.empty
+
+sem NativeMethodDecl
+    | NativeMethodDecl
+        lhs.pp = text @name >|< space >|< showable @label >|< space >|< parens (showable @typeset) 
+                
+
+sem MaybeStmt
+    | Just 
+        lhs.pp = lbrace >-< indent 4 @just.pp >-< rbrace
+    | Nothing 
+        lhs.pp = text ";"
+   
+{
+
+instance Printable (Label,Label,Label) where
+    pp (ln,lx,lxe) = text "/* "
+                 >|< text "Entry: "
+                 >|< showable ln
+                 >|< text ", Exit: "
+                 >|< showable lx 
+                 >|< text ", Exception Exit: "
+                 >|< showable lxe
+                 >|< text " */"
+
+instance Printable (Label,Label,Label,Label,Label) where
+    pp (lc,lr,lre,la,lae) = text "/* " 
+                        >|< text ", Call: "
+                        >|< showable lc
+                        >|< text ", Return: "
+                        >|< showable lr
+                        >|< text ", Exception Return: "
+                        >|< showable lre 
+                        >|< text ", After: "
+                        >|< showable la
+                        >|< text ", Exception After: "
+                        >|< showable lae
+                        >|< text " */"
+
+
+-- Actual params
+instance Printable [Var] where
+    pp xs = sepBy (L.map variable xs) (comma >|< space)
+
+}
+ 
+sem Param
+    | Param
+        lhs.pp = maybe P.empty (\ty -> text ty >|< space) @ty >|< (if @ref then text "&" else P.empty) >|< variable @var >|< maybe P.empty (\value -> space >|< text "=" >|< space >|< @value.pp) @value.self
+  
+sem ParamList
+    | Cons 
+        lhs.pp = if L.null @tl.self then @hd.pp else @hd.pp >|< comma >|< space >|< @tl.pp
+    | Nil
+        lhs.pp = P.empty     
+        
+        
+        
+-------------------------------------------------------------------------------
+-- Clauses
+-------------------------------------------------------------------------------
+        
+sem Clause 
+    | Clause
+        lhs.pp = text "catch" >|< space >|< lparen >|< text @ty >|< space >|< variable @var >|< rparen >|< space >|< lbrace >-< indent 4 @s.pp >-< rbrace
+            
+sem ClauseList
+    | Cons 
+        lhs.pp = @hd.pp >-< @tl.pp
+    | Nil
+        lhs.pp = P.empty
+
+
+        
+
+-------------------------------------------------------------------------------
+-- Members
+------------------------------------------------------------------------------- 
+           
+sem Member
+    | FieldDecl
+        lhs.pp = pp @visibility >|< space >|< (if @isStatic then text "static" >|< space else P.empty) >|< variable @name >|< maybe P.empty (\value -> space >|< text "=" >|< space >|< @value.pp) @value.self >|< semicolon
+    | ConstantDecl
+        lhs.pp = text "const" >|< space >|< text @name >|< space >|< text "=" >|< space >|< @value.pp >|< semicolon
+    | MethodDecl 
+        lhs.pp = pp @visibility >|< space >|< (if @isStatic then text "static" >|< space else P.empty) >|< (if @isAbstract then text "abstract" >|< space else P.empty) >|< (if @isFinal then text "final" >|< space else P.empty) >|< text "function" >|< space >|< (if @ref then text "&" else P.empty) >|< text @name >|< space >|< parens @params.pp >|< pp (@ln,@lx,@lxe)>|< (if @isAbstract then @s.pp else space >-< @s.pp)
+    
+sem MemberList 
+    | Cons
+        lhs.pp = @hd.pp >-< @tl.pp
+    | Nil
+        lhs.pp = P.empty
+                
+sem Const
+    | Null
+        lhs.pp = text "null"
+    | Bool
+        lhs.pp = if @value then text "true" else text "false"
+    | Integer
+        lhs.pp = showable @value
+    | Double
+        lhs.pp = showable @value
+    | SingleQuotedString
+        lhs.pp = text "'" >|< text @value >|< text "'" 
+    | DoubleQuotedString 
+        lhs.pp = text "\"" >|< text @value >|< text "\""
+    | Constant
+        lhs.pp = text @name
+    | NativeConstant
+        lhs.pp = text @name
+    | ClassConstant
+        lhs.pp = text @ty >|< colon >|< colon >|< text @name
+    | NativeClassConstant
+        lhs.pp = text @ty >|< colon >|< colon >|< text @name >|< text "/" >|< text "*" >|< text "native" >|< text "*" >|< text "/"
+    | Array
+        lhs.pp = text "array" >|< parens @elems.pp
+
+sem ArrayElem
+    | ElemWithKey 
+        lhs.pp = @k.pp >|< space >|< text "=>" >|< space >|< @v.pp
+    | ElemWithoutKey 
+        lhs.pp = @v.pp
+        
+sem ArrayElemList
+    | Cons
+        lhs.pp = if L.null @tl.self then @hd.pp else @hd.pp >|< comma >|< space >|< @tl.pp
+    | Nil
+        lhs.pp = P.empty
+
+attach Program
+{
+
+-------------------------------------------------------------------------------
+-- Printer
+-------------------------------------------------------------------------------
+
+render :: Doc -> String
+render = render_ 1000 
+
+instance Printable Program where
+    pp = pp_Syn_Program . execute
+
+}

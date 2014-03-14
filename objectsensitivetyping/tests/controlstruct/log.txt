@@ -1,0 +1,7 @@
+6:i:integer
+7:ElcfPD0:boolean
+10:ElcfPD0:boolean
+16:i:integer
+17:TLE3:integer
+18:TLE4:boolean
+20:i:integer

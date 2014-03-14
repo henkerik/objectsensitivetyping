@@ -1,0 +1,213 @@
+imports {
+import Data.Char
+}
+
+-------------------------------------------------------------------------------
+-- 
+-------------------------------------------------------------------------------
+attr Program MaybeStmt Stmt Member MemberList Param ParamList Clause ClauseList NativeClassDecl NativeClassDeclList NativeConstructorDecl NativeMethodDecl NativeMethodDeclList NativeFieldDecl NativeFieldDeclList NativeClassConstantDecl NativeClassConstantDeclList Const MaybeConst ArrayElem ArrayElemList
+    syn first  :: self
+    syn second :: self
+    
+attr MaybeStmt Stmt Member MemberList Param ParamList Clause ClauseList
+    inh graph :: Graph
+
+attr Program MaybeStmt Stmt Member MemberList Param ParamList Clause ClauseList
+    inh isNativeFunction      :: {FunctionName              -> Bool}
+    inh isNativeConstant      :: {ConstantName              -> Bool}
+    inh isNativeConstructor   :: {Type                      -> Bool}
+    inh isNativeClassConstant :: {Type -> ClassConstantName -> Bool}
+
+    inh returnTypesByFunction :: {FunctionName -> S.Set Type}
+    inh graphF                :: {Program      -> Graph}
+    
+    inh nativeClasses :: {[NativeClassDecl]}
+
+{
+lowercase = L.map toLower
+}
+
+
+
+sem Program
+    | Program
+        -- If the first statement is a call, the fixed point iteration won't start
+        loc.first = Program (Sequence Skip @s.first) @lhs.nativeClasses
+        lhs.first = @loc.first
+        
+        s.graph = @lhs.graphF @loc.first
+
+sem Const
+    | Array
+        lhs.second = Array @label @elems.second
+    | ClassConstant 
+        lhs.first = ClassConstant (lowercase @ty) @name
+
+sem Stmt 
+    | StaticCall
+       lhs.first  = StaticCall @var @ref (lowercase @ty) (lowercase @name) @params
+       lhs.second = let ty   = lowercase @ty in
+                    let name = lowercase @name in
+                    if not $ methodExists @lhs.graph ty name 
+                    then case resolve @lhs.graph (Method ty name) of
+                        Nothing                 -> error $ "Calling non existent method: " ++ show ty ++ "::" ++ show name
+                        Just (Method ty' name') -> ResolvedCall @var @ref ty' name' @params
+                    else if isStatic $ methodDeclarationByName @lhs.graph ty name 
+                         then StaticCall   @var @ref ty name @params
+                         else ResolvedCall @var @ref ty name @params
+              
+                
+    -- Change method, function and class names to lower case
+    | FunctionDecl
+        lhs.first = FunctionDecl @ref (lowercase @name) @params.first @s.first
+        
+    | ClassDecl
+        lhs.first = ClassDecl @isAbstract @isFinal (lowercase @name) (fmap (lowercase) @extend) (S.map (lowercase) @implements) @members.first
+        
+    | InterfaceDecl
+        lhs.first = InterfaceDecl (lowercase @name) (S.map (lowercase) @extend) @members.first
+
+    | ConstructorCall
+        lhs.first = ConstructorCall @var (lowercase @ty) @params
+        
+    | ConstructorReturn
+        lhs.first = ConstructorReturn @var (lowercase @ty) @params
+        
+    | NativeConstructorCall
+        lhs.first = NativeConstructorCall @var (lowercase @ty) @params
+        
+    | InstanceOf
+        lhs.first = InstanceOf @var @var' (lowercase @ty)
+         
+    | WriteStaticField
+        lhs.first = WriteStaticField (lowercase @ty) @to @ref @from
+        
+    | ReadStaticField
+        lhs.first = ReadStaticField @to @ref (lowercase @ty) @from
+        
+    | FunctionCall
+        lhs.first = if @lhs.isNativeFunction (lowercase @name)
+                    then NativeFunctionCall @var @ref (lowercase @name) @params (@lhs.returnTypesByFunction $ lowercase @name)
+                    else FunctionCall @var @ref (lowercase @name) @params
+         
+    | MethodCall
+        lhs.first = MethodCall @var @ref @var' (lowercase @name) @params
+        
+    | ResolvedCall
+        lhs.first = ResolvedCall @var @ref (lowercase @ty) (lowercase @name) @params
+                          
+    | Declare
+        lhs.first = (case @const.self of 
+                        (Constant name)         -> if @lhs.isNativeConstant name 
+                                                   then Declare @var (NativeConstant name)
+                                                   else Lookup @var name
+                        (ClassConstant ty name) -> if @lhs.isNativeClassConstant (lowercase ty) name
+                                                   then Declare @var (NativeClassConstant (lowercase ty) name)
+                                                   else Declare @var @const.first
+                        otherwise               -> Declare @var @const.first)
+                        
+                            
+sem Param
+    | Param
+        lhs.first = Param (fmap lowercase @ty) @ref @var @value.first
+  
+sem Member 
+    | FieldDecl
+        lhs.first = FieldDecl @visibility @isStatic @name @value.first
+        
+    | MethodDecl
+        lhs.first = MethodDecl @visibility @isStatic @isAbstract @isFinal @ref (lowercase @name) @params.first @s.first
+    
+    | MethodDefinitionDecl
+        lhs.first = MethodDefinitionDecl (lowercase @name) @params.first
+    
+    | ConstantDecl
+        lhs.first = ConstantDecl @name @value.first
+  
+ 
+sem Clause
+    | Clause 
+        lhs.first = Clause (lowercase @ty) @var @s.first
+
+-- attach Program doesnot work..
+-- attach Program            
+-- {
+-- {-
+-- 
+-- needsDefConstr members extend = not (L.any isConstr members) -- && isNothing extend
+--     where
+--         isConstr (MethodDecl _ _ _ _ _ name _ _) = name == "__construct"
+--         isConstr otherwise                       = False
+-- 
+-- defConstr Nothing   = MethodDecl Public False False False False "__construct" [] (Just Skip)
+-- defConstr (Just ty) = MethodDecl Public False False False False "__construct" [] (Just $ ResolvedCall Nothing False ty "__construct" []) 
+-- 
+-- -}
+-- 
+-- --transform p isNativeFunction isNativeConstant isNativeConstructor nativeClasses = let tmp = first_Syn_Program $ execute p (isNativeFunction, isNativeConstant, isNativeConstructor, nativeClasses, graph)
+-- --                                                                                  in second_Syn_Program $ execute tmp (isNativeFunction, isNativeConstant, isNativeConstructor, nativeClasses, graph)
+-- }
+-- 
+
+{-
+
+function createIterator ($it) 
+{
+    if ($it instanceof Iterator) {
+        return $it;
+    } else {
+        if (is_array ($it) || is_object ($it)) {
+            $obj = new ArrayObject ($it);
+            return $obj->getIterator ();
+        } else {
+            throw new Exception ("Expecting an iterator, array or object at __createIterator__");
+        }
+    }
+}
+
+-}
+
+
+-- __createIterator__ :: Stmt
+-- __createIterator__ = FunctionDecl False "__createIterator__" [Param Nothing False "it" Nothing] $
+--     Sequence (InstanceOf "isIterator" "it" "Iterator") $
+--     If "isIterator" 
+--         (Return "it") 
+--         (Sequence (FunctionCall (Just "isArray") False "is_array" ["it"]) $
+--          Sequence (FunctionCall (Just "isObject") False "is_object" ["it"]) $
+--          Sequence (BinaryOp Or "isArrayOrObject" "isArray" "isObject") $
+--          If "isArrayOrObject" 
+--              (Sequence (ConstructorCall "object" "ArrayObject" ["it"]) $ 
+--               Sequence (MethodCall (Just "iterator") False "object" "getIterator" []) $ 
+--               Return "iterator"
+--              )
+--              Skip
+--         )
+--
+
+--    | ClassDecl
+--        lhs.first = let members = if needsDefConstr @members.first @extend then (defConstr @extend):(@members.first) else @members.first
+--                    in ClassDecl @isAbstract @isFinal @name @extend @implements members
+
+
+--    | ConstructorCall
+  --      lhs.first = Sequence @self (MethodCall Nothing False @var "__construct" @params)
+  
+--    | ConstructorCall
+  --      lhs.first = if @lhs.isNativeConstructor @ty
+    --                then NativeConstructorCall @var @ty @params
+      --              else @self
+      
+--    | Foreach
+--        lhs.first = let iter   = "ITER" ++ show @label
+--                        iterb  = "ITERB" ++ show @label
+--                        iternb = "ITERNB" ++ show @label 
+--                    in Sequence (CreateIterator iter @iter) $
+--                       Sequence (MethodCall Nothing False iter "rewind" []) $
+--                       While (Sequence (MethodCall (Just iterb) False iter "valid" []) $ 
+--                              Sequence (UnaryOp Not iternb iterb) $ 
+--                              Sequence (If iternb Break Skip) $ 
+--                              Sequence (MethodCall (Just @value) False iter "current" []) $
+--                              Sequence (maybe Skip (\var -> MethodCall (Just var) False iter "key" []) @key) $ 
+--                              Sequence @s.first (MethodCall Nothing False iter "next" []))
+--

@@ -1,0 +1,20 @@
+file: "src/PHP/IR.ag"
+options: haskellsyntax, data, catas, semfuns, wrappers, signatures, self, optimize, kennedywarren, gencostcentres, module "PHP.IR"
+                                                                        
+file: "src/PHP/IR/Declaration.ag"                                       
+options: haskellsyntax, data, catas, semfuns, wrappers, signatures, self, optimize, kennedywarren, gencostcentres
+                                                                        
+file: "src/PHP/IR/Flow.ag"                                              
+options: haskellsyntax, data, catas, semfuns, wrappers, signatures, self, optimize, kennedywarren, gencostcentres
+                                                                        
+file: "src/PHP/IR/Instrument.ag"                                        
+options: haskellsyntax, data, catas, semfuns, wrappers, signatures, self, optimize, kennedywarren, gencostcentres
+                                                                        
+file: "src/PHP/IR/IR.ag"                                                
+options: haskellsyntax, data, catas, semfuns, wrappers, signatures, self, optimize, kennedywarren, gencostcentres
+                                                                        
+file: "src/PHP/IR/PP.ag"                                                
+options: haskellsyntax, data, catas, semfuns, wrappers, signatures, self, optimize, kennedywarren, gencostcentres
+                                                                        
+file: "src/PHP/IR/Transform.ag"                                         
+options: haskellsyntax, data, catas, semfuns, wrappers, signatures, self, optimize, kennedywarren, gencostcentres

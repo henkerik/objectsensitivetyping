@@ -1,0 +1,47 @@
+module {PHP.IR}
+{
+  module PHP.IR
+, module PHP.IR_common
+}
+{
+import           Data.IntMap as IM hiding (foldr)
+import           Data.Map as M hiding (foldr)
+import qualified Data.Set as S
+import           Data.List as L
+import           CCO.Printing as P hiding (render, join)
+}
+
+include "IR/IR.ag"
+include "IR/Flow.ag"
+include "IR/PP.ag"
+include "IR/Instrument.ag"
+include "IR/Transform.ag"
+
+-- attach Program
+-- {
+-- 
+-- class Optional a b r where
+--     opt :: (a -> b) -> a -> r
+-- 
+-- instance Optional a b b where
+--     opt = id
+--     
+-- instance Optional a b (a -> b) where
+--     opt = const
+--     
+-- execute :: (Optional (FunctionName -> Bool, ConstantName -> Bool, Type -> Bool, [NativeClassDecl], Program -> Graph) Syn_Program r) => Program -> r
+-- execute p = opt (execute' p) (const False, const False, const False,[],error "Should not be called") 
+-- 
+-- execute' p (isNativeFunction, isNativeConstant, isNativeConstructor, isNativeClassConstant, nativeClasses, graphF) = wrap_Program (sem_Program p) inh
+--     where
+--         inh = Inh_Program 
+--               { 
+--                   labels_Inh_Program = 4, -- The first three labels are used for the default constructor and the fourth label is used as a drain for uncaught exceptions
+--                   isNativeFunction_Inh_Program      = isNativeFunction,
+--                   isNativeConstant_Inh_Program      = isNativeConstant,
+--                   isNativeConstructor_Inh_Program   = isNativeConstructor,
+--                   isNativeClassConstant_Inh_Program = 
+--                   nativeClasses_Inh_Program         = nativeClasses,
+--                   graphF_Inh_Program                = graphF
+--               } 
+-- }

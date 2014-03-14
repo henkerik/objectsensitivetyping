@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo "$1"
+cat "$1" | ../simplifier | osta4php instrument --apifile=../nativeAPI.txt +RTS -K128M > "$1-instrumented"
+export DIR=$(dirname $1)
+export FILE=$(basename $1)
+echo ${DIR}
+cd ${DIR}
+rm "log.txt"
+php -d error_reporting=30711 "$FILE-instrumented"
+#rm "$FILE-instrumented"
+cd -
+rm "tmp.php"
+cat "$1" | ../simplifier > tmp.php 
+time osta4php test --inputfile=tmp.php --apifile=../nativeAPI.txt --twofulloneh --enablegc --file=${DIR}/log.txt +RTS -K128M # +RTS -H500M 
+
+#-hr -s
+
+# -N2 
+
+# 7570 met depth 1 full object
+# 11897 met depth 2 full object
+# 10289 met depth 1 type sensit
+# 15808 met depth 2 type sensitive
