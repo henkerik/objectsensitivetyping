@@ -1,3 +1,0 @@
-6:a:double
-7:b:double
-8:c:double

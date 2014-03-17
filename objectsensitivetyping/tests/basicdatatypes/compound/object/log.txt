@@ -1,2 +1,0 @@
-11:bar:object[foo]
-10:x:string
